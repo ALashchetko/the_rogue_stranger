@@ -1,0 +1,19 @@
+{
+  "name": "lowdevelopers-game-team",
+  "version": "1.0.0",
+  "description": "LowDevelopers-game-team",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolling-scopes-school/LowDevelopers-game-team.git"
+  },
+  "author": "Anton Lashchetko, Sasha Ignashevich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rolling-scopes-school/LowDevelopers-game-team/issues"
+  },
+  "homepage": "https://github.com/rolling-scopes-school/LowDevelopers-game-team#readme"
+}
