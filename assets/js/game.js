@@ -1,9 +1,9 @@
-var map, layer, player, Background, cursors, jumpKey, jumpTimer = 0;
+var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0;
 var Game = {
     preload: function () {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.spritesheet('dude', 'assets/images/dude.png', 32, 48);
+        game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
     },
     create: function () {
         Background = game.add.graphics(0, 0);
@@ -16,9 +16,12 @@ var Game = {
         map.setCollisionBetween(1, 25);
         layer = map.createLayer('Tile Layer 1');
         layer.resizeWorld();
-        player = game.add.sprite(32, game.world.height - 150, 'dude');
-        player.animations.add('left', [0, 1, 2, 3], 10, true);
-        player.animations.add('right', [5, 6, 7, 8], 10, true);
+        player = game.add.sprite(32, game.world.height - 150, 'knight');
+        player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
+        player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
+        player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 10, true);
+        player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 10, true);
+        player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 10, true);
         game.physics.enable(player);
         player.body.gravity.y = 250;
         player.body.bounce.y = 0.1;
@@ -27,6 +30,7 @@ var Game = {
         player.y = 50;
         cursors = game.input.keyboard.createCursorKeys();
         jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        actionKeys = game.input.keyboard.addKeys({ 'slash': Phaser.KeyCode.A, 'block': Phaser.KeyCode.D, 'death': Phaser.KeyCode.K })
         game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
     },
     update: function () {
@@ -34,16 +38,20 @@ var Game = {
         player.body.velocity.x = 0;
         if (cursors.left.isDown) {
             player.body.velocity.x = -100;
-            player.animations.play('left');
-        }
-        else if (cursors.right.isDown) {
+            player.scale.setTo(-1, 1);
+            player.animations.play('knight_walk');
+        } else if (cursors.right.isDown) {
             player.body.velocity.x = 100;
-            player.animations.play('right');
-        }
-        else
-        {
-            player.animations.stop();
-            player.frame = 4;
+            player.scale.setTo(1, 1);
+            player.animations.play('knight_walk');
+        } else if (actionKeys.slash.isDown) {
+            player.animations.play('knight_slash');
+        } else if (actionKeys.block.isDown) {
+            player.animations.play('knight_block');
+        } else if (actionKeys.death.isDown) {
+            player.animations.play('knight_death');
+        } else {
+            player.animations.play('knight_idle');
         }
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
             player.body.velocity.y = -200;
