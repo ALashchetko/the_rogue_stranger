@@ -4,6 +4,7 @@ var Game = {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
+        game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -28,9 +29,25 @@ var Game = {
         player.anchor.setTo(0.5, 0.5);
         player.x = 50;
         player.y = 50;
+
+        var skeleton = new Skeleton(game, 50, 124, 1, 40);
+		game.add.existing(skeleton);
+		skeleton = new Skeleton(game, 480, 124,-1, 40);
+		game.add.existing(skeleton);
+		skeleton = new Skeleton(game, 100, 204, 1, 40);
+		game.add.existing(skeleton)
+		skeleton = new Skeleton(game, 480, 204,-1, 40);
+		game.add.existing(skeleton)
+		skeleton = new Skeleton(game, 460, 304,-1, 40);
+		game.add.existing(skeleton)
+
         cursors = game.input.keyboard.createCursorKeys();
         jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        actionKeys = game.input.keyboard.addKeys({ 'slash': Phaser.KeyCode.A, 'block': Phaser.KeyCode.D, 'death': Phaser.KeyCode.K })
+        actionKeys = game.input.keyboard.addKeys({
+            'slash': Phaser.KeyCode.A,
+            'block': Phaser.KeyCode.D,
+            'death': Phaser.KeyCode.K
+        })
         game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
     },
     update: function() {
