@@ -1,11 +1,11 @@
 var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0;
 var Game = {
-    preload: function () {
+    preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
     },
-    create: function () {
+    create: function() {
         Background = game.add.graphics(0, 0);
         Background.beginFill(0x53BECE, 1);
         Background.drawRect(0, 0, game.world.width + 500, game.world.height + 500);
@@ -33,7 +33,7 @@ var Game = {
         actionKeys = game.input.keyboard.addKeys({ 'slash': Phaser.KeyCode.A, 'block': Phaser.KeyCode.D, 'death': Phaser.KeyCode.K })
         game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
     },
-    update: function () {
+    update: function() {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
         if (cursors.left.isDown) {
@@ -48,6 +48,9 @@ var Game = {
             player.animations.play('knight_slash');
         } else if (actionKeys.block.isDown) {
             player.animations.play('knight_block');
+            if (player.animations.currentFrame.name === 'knight_block6') {
+                player.animations.paused = true;
+            }
         } else if (actionKeys.death.isDown) {
             player.animations.play('knight_death');
         } else {
