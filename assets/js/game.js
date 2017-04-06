@@ -1,4 +1,4 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives;
+var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives, status = 'idle';
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
@@ -64,12 +64,15 @@ var Game = {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
         var live = lives.getFirstAlive();
-        if (lives.countLiving() < 1){
+        if (lives.countLiving() < 1 || status === 'death'){
+            status = 'death';
             player.animations.play('knight_death');
-            player.kill();
+            if (player.animations.currentFrame.name === 'knight_death8'){
+                player.kill();
+                game.input.onTap.addOnce(restart, this);
+            }
             // stateText.text=" GAME OVER \n Click to restart";
             // stateText.visible = true;
-            game.input.onTap.addOnce(restart, this);
         }
 
         if (cursors.left.isDown) {
@@ -87,10 +90,14 @@ var Game = {
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
-        } else if (actionKeys.death.isDown) {
+        } else if (actionKeys.death.isDown || status === 'hit') {
+            status = 'hit';
             player.animations.play('knight_hit');
-            if (player.animations.currentFrame.name === 'knight_death2' && live) live.kill();
-        } else {
+            if (player.animations.currentFrame.name === 'knight_death2'){
+                live.kill();
+                status = 'idle';
+            }
+        } else if (status === 'idle') {
             player.animations.play('knight_idle');
         }
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
@@ -102,6 +109,7 @@ var Game = {
 
 function restart () {
     lives.callAll('revive');
+    status = 'idle';
     // aliens.removeAll();
     // createAliens();
     player.revive();
