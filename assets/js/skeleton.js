@@ -4,7 +4,7 @@ Skeleton = function(game, x, y, direction, speed) {
     this.animations.add('skeleton_walk', Phaser.Animation.generateFrameNames('skeleton_walk', 0, 5), 8, true);
     this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 8, true);
     this.scale.setTo(scale, scale);
-    this.anchor.setTo(0.5);
+    this.anchor.setTo(0.5, 0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.xSpeed = direction * speed;
     this.currentx = x;
