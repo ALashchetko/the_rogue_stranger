@@ -1,4 +1,6 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives, status = 'idle', gameOver;
+var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
+    lives, status = 'idle',
+    gameOver, countOfLives = 3;
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
@@ -33,25 +35,25 @@ var Game = {
         player.y = 50;
 
         var skeleton = new Skeleton(game, 50, 124, 1, 40);
-		game.add.existing(skeleton);
-		skeleton = new Skeleton(game, 480, 124,-1, 40);
-		game.add.existing(skeleton);
-		skeleton = new Skeleton(game, 100, 204, 1, 40);
-		game.add.existing(skeleton)
-		skeleton = new Skeleton(game, 480, 204,-1, 40);
-		game.add.existing(skeleton)
-		skeleton = new Skeleton(game, 460, 304,-1, 40);
-		game.add.existing(skeleton)
+        game.add.existing(skeleton);
+        skeleton = new Skeleton(game, 480, 124, -1, 40);
+        game.add.existing(skeleton);
+        skeleton = new Skeleton(game, 100, 204, 1, 40);
+        game.add.existing(skeleton)
+        skeleton = new Skeleton(game, 480, 204, -1, 40);
+        game.add.existing(skeleton)
+        skeleton = new Skeleton(game, 460, 304, -1, 40);
+        game.add.existing(skeleton)
 
         lives = game.add.group();
-        for(var i = 0; i < 3; i++){
-            var live = lives.create(game.world.width - 100 + (30 * i), 50, 'heart');
-            live.anchor.setTo(0.5, 0.5);
-            live.scale.setTo(0.2, 0.2);
-            live.alpha = 0.85;
-        }
+        addLive(countOfLives);
 
-        var style = { font: "bold 50px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+        var style = {
+            font: "bold 50px Arial",
+            fill: "#fff",
+            boundsAlignH: "center",
+            boundsAlignV: "middle"
+        };
         gameOver = game.add.text(0, 0, "Game over! \nClick to restart", style);
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         gameOver.setTextBounds(0, 250, 800, 100);
@@ -70,10 +72,10 @@ var Game = {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
         var live = lives.getFirstAlive();
-        if (lives.countLiving() < 1 || status === 'death'){
+        if (lives.countLiving() < 1 || status === 'death') {
             status = 'death';
             player.animations.play('knight_death');
-            if (player.animations.currentFrame.name === 'knight_death8'){
+            if (player.animations.currentFrame.name === 'knight_death8') {
                 player.kill();
                 gameOver.visible = true;
                 game.input.onTap.addOnce(restart, this);
@@ -95,10 +97,11 @@ var Game = {
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
+            addLive(5);
         } else if (actionKeys.death.isDown || status === 'hit') {
             status = 'hit';
             player.animations.play('knight_hit');
-            if (player.animations.currentFrame.name === 'knight_death2'){
+            if (player.animations.currentFrame.name === 'knight_death2') {
                 live.kill();
                 status = 'idle';
             }
@@ -108,12 +111,13 @@ var Game = {
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
+            addLive(lives.countLiving() + 1);
         }
     }
 };
 
-function restart () {
-    lives.callAll('revive');
+function restart() {
+    addLive(countOfLives);
     status = 'idle';
     // aliens.removeAll();
     // createAliens();
@@ -121,4 +125,14 @@ function restart () {
     player.x = 50;
     player.y = 50;
     gameOver.visible = false;
+}
+
+function addLive(count) {
+    lives.removeAll();
+    for (var i = 0; i < count; i++) {
+        var live = lives.create(game.world.width - 150 + (30 * i), 50, 'heart');
+        live.anchor.setTo(0.5, 0.5);
+        live.scale.setTo(0.2, 0.2);
+        live.alpha = 0.85;
+    }
 }
