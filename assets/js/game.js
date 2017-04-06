@@ -1,7 +1,8 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0;
+var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives;
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
+        game.load.image('heart', 'assets/images/heart.png');
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
@@ -22,6 +23,7 @@ var Game = {
         player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
         player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 10, true);
         player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 10, true);
+        player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
         player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 10, true);
         game.physics.enable(player);
         player.body.gravity.y = 250;
@@ -41,6 +43,14 @@ var Game = {
 		skeleton = new Skeleton(game, 460, 304,-1, 40);
 		game.add.existing(skeleton)
 
+        lives = game.add.group();
+        for(var i = 0; i < 3; i++){
+            var live = lives.create(game.world.width - 100 + (30 * i), 50, 'heart');
+            live.anchor.setTo(0.5, 0.5);
+            live.scale.setTo(0.2, 0.2);
+            live.alpha = 0.85;
+        }
+
         cursors = game.input.keyboard.createCursorKeys();
         jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         actionKeys = game.input.keyboard.addKeys({
@@ -53,6 +63,15 @@ var Game = {
     update: function() {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
+        var live = lives.getFirstAlive();
+        if (lives.countLiving() < 1){
+            player.animations.play('knight_death');
+            player.kill();
+            // stateText.text=" GAME OVER \n Click to restart";
+            // stateText.visible = true;
+            game.input.onTap.addOnce(restart, this);
+        }
+
         if (cursors.left.isDown) {
             player.body.velocity.x = -100;
             player.scale.setTo(-1, 1);
@@ -69,7 +88,8 @@ var Game = {
                 player.animations.paused = true;
             }
         } else if (actionKeys.death.isDown) {
-            player.animations.play('knight_death');
+            player.animations.play('knight_hit');
+            if (player.animations.currentFrame.name === 'knight_death2' && live) live.kill();
         } else {
             player.animations.play('knight_idle');
         }
@@ -79,3 +99,13 @@ var Game = {
         }
     }
 };
+
+function restart () {
+    lives.callAll('revive');
+    // aliens.removeAll();
+    // createAliens();
+    player.revive();
+    player.x = 50;
+    player.y = 50;
+    // stateText.visible = false;
+}
