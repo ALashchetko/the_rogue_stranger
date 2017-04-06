@@ -24,7 +24,7 @@ var Game = {
         player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 10, true);
         player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 10, true);
         player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
-        player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 10, true);
+        player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 6, true);
         game.physics.enable(player);
         player.body.gravity.y = 250;
         player.body.bounce.y = 0.1;
