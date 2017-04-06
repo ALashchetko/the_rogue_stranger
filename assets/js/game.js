@@ -1,4 +1,4 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives, status = 'idle';
+var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0, lives, status = 'idle', gameOver;
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
@@ -51,6 +51,12 @@ var Game = {
             live.alpha = 0.85;
         }
 
+        var style = { font: "bold 50px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" };
+        gameOver = game.add.text(0, 0, "Game over! \nClick to restart", style);
+        gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+        gameOver.setTextBounds(0, 250, 800, 100);
+        gameOver.visible = false;
+
         cursors = game.input.keyboard.createCursorKeys();
         jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         actionKeys = game.input.keyboard.addKeys({
@@ -69,10 +75,9 @@ var Game = {
             player.animations.play('knight_death');
             if (player.animations.currentFrame.name === 'knight_death8'){
                 player.kill();
+                gameOver.visible = true;
                 game.input.onTap.addOnce(restart, this);
             }
-            // stateText.text=" GAME OVER \n Click to restart";
-            // stateText.visible = true;
         }
 
         if (cursors.left.isDown) {
@@ -115,5 +120,5 @@ function restart () {
     player.revive();
     player.x = 50;
     player.y = 50;
-    // stateText.visible = false;
+    gameOver.visible = false;
 }
