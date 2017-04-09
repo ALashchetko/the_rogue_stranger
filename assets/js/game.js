@@ -2,6 +2,8 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
     lives, status = 'idle',
     gameOver, countOfLives = 3,
     enemy;
+let screenWidth = 640,
+    screenHeight = 480;
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
@@ -47,9 +49,9 @@ var Game = {
             boundsAlignH: "center",
             boundsAlignV: "middle"
         };
-        gameOver = game.add.text(0, 0, "Game over! \nClick to restart", style);
+        gameOver = game.add.text(0, 0, "   Game over! \nClick to restart", style);
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
-        gameOver.setTextBounds(0, 250, 800, 100);
+        gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
         gameOver.visible = false;
 
         cursors = game.input.keyboard.createCursorKeys();
@@ -64,17 +66,12 @@ var Game = {
     update: function() {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
-        var live = lives.getFirstAlive();
-        if (lives.countLiving() < 1 || status === 'death') {
-            status = 'death';
-            player.animations.play('knight_death');
-            if (player.animations.currentFrame.name === 'knight_death8') {
-                player.kill();
-                gameOver.visible = true;
-                game.input.onTap.addOnce(restart, this);
-            }
-        }
-
+        lives.x = game.camera.x;
+        lives.y = game.camera.y;
+        gameOver.x = game.camera.x;
+        gameOver.y = game.camera.y;
+        getDamageFromTouch();
+        death();
         if (cursors.left.isDown) {
             player.body.velocity.x = -100;
             player.scale.setTo(-1, 1);
@@ -85,22 +82,18 @@ var Game = {
             player.animations.play('knight_walk');
         } else if (actionKeys.slash.isDown) {
             player.animations.play('knight_slash');
-            if (player.animations.currentFrame.name === 'knight_slash7') {
-                getHit();
-            }
+            if (player.animations.currentFrame.name === 'knight_slash7')
+                getSlash();
         } else if (actionKeys.block.isDown) {
             player.animations.play('knight_block');
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
-            addLive(5);
         } else if (actionKeys.death.isDown || status === 'hit') {
             status = 'hit';
             player.animations.play('knight_hit');
-            if (player.animations.currentFrame.name === 'knight_death2') {
-                live.kill();
-                status = 'idle';
-            }
+            if (player.animations.currentFrame.name === 'knight_death2')
+                getDamage();
         } else if (status === 'idle') {
             player.animations.play('knight_idle');
         }
@@ -112,31 +105,20 @@ var Game = {
     }
 };
 
-function restart() {
-    addLive(countOfLives);
-    status = 'idle';
-    enemy.removeAll();
-    createEnemy();
-    player.revive();
-    player.x = 50;
-    player.y = 50;
-    gameOver.visible = false;
-}
-
 function addLive(count) {
     lives.removeAll();
     for (var i = 0; i < count; i++) {
-        var live = lives.create(game.world.width - 150 + (30 * i), 50, 'heart');
+        var live = lives.create(screenWidth - 150 + (30 * i), screenHeight + 50, 'heart');
         live.anchor.setTo(0.5, 0.5);
         live.scale.setTo(0.2, 0.2);
         live.alpha = 0.85;
     }
 }
 
-function getHit() {
+function getSlash() {
     const range = 40,
         tmpPos = 15;
-    const touch = (i, scale) => {
+    const hit = (i, scale) => {
         return scale ?
             player.world.x < enemy.children[i].world.x &&
             player.world.x + range >= enemy.children[i].world.x &&
@@ -149,25 +131,82 @@ function getHit() {
 
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
-        if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false)))
+        if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false)))
             enemy.removeChild(enemy.children[i]);
     }
 }
 
+function getDamageFromTouch() {
+    const range = 5,
+        tmpPos = 15,
+        hitSpeed = 500;
+    const touch = (i, scale) => {
+        return scale ?
+            player.world.x < enemy.children[i].world.x &&
+            player.world.x + range >= enemy.children[i].world.x &&
+            player.world.y + tmpPos >= enemy.children[i].world.y &&
+            player.world.y - (tmpPos + 5) <= enemy.children[i].world.y :
+            player.world.x > enemy.children[i].world.x &&
+            player.world.x - range <= enemy.children[i].world.x &&
+            player.world.y + tmpPos >= enemy.children[i].world.y &&
+            player.world.y - (tmpPos + 5) <= enemy.children[i].world.y;
+    };
+    for (let i = 0; i < enemy.countLiving(); i++) {
+        if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
+            status = 'hit';
+            player.animations.play('knight_hit');
+            enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
+            if (player.animations.currentFrame.name === 'knight_death2') getDamage();
+        }
+    }
+}
+
+function death() {
+    if (!lives.countLiving()) {
+        status = 'death';
+        player.animations.play('knight_death');
+        if (player.animations.currentFrame.name === 'knight_death8') {
+            player.kill();
+            gameOver.visible = true;
+            game.input.onTap.addOnce(restart, this);
+        }
+    }
+}
+
+function getDamage() {
+    let live = lives.getFirstAlive();
+    if (!lives.countLiving()) death();
+    else {
+        live.kill();
+        status = 'idle';
+    }
+}
+
 function createEnemy() {
-    skeleton = new Skeleton(game, 50, 124, 1, 40);
+    skeleton = new Skeleton(game, 75, 124, 1, 40);
     game.add.existing(skeleton);
     enemy.add(skeleton);
     skeleton = new Skeleton(game, 480, 124, -1, 40);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    skeleton = new Skeleton(game, 100, 204, 1, 40);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    skeleton = new Skeleton(game, 480, 204, -1, 40);
+    skeleton = new Skeleton(game, 100, 304, 1, 40);
     game.add.existing(skeleton);
     enemy.add(skeleton);
     skeleton = new Skeleton(game, 460, 304, -1, 40);
     game.add.existing(skeleton);
     enemy.add(skeleton);
+    skeleton = new Skeleton(game, 550, 304, -1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
+}
+
+function restart() {
+    addLive(countOfLives);
+    status = 'idle';
+    enemy.removeAll();
+    createEnemy();
+    player.revive();
+    player.x = 50;
+    player.y = 50;
+    gameOver.visible = false;
 }
