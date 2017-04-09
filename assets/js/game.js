@@ -72,11 +72,11 @@ var Game = {
         gameOver.y = game.camera.y;
         getDamageFromTouch();
         death();
-        if (cursors.left.isDown) {
+        if (cursors.left.isDown && status === 'idle') {
             player.body.velocity.x = -100;
             player.scale.setTo(-1, 1);
             player.animations.play('knight_walk');
-        } else if (cursors.right.isDown) {
+        } else if (cursors.right.isDown && status === 'idle') {
             player.body.velocity.x = 100;
             player.scale.setTo(1, 1);
             player.animations.play('knight_walk');
@@ -108,7 +108,7 @@ var Game = {
 function addLive(count) {
     lives.removeAll();
     for (var i = 0; i < count; i++) {
-        var live = lives.create(screenWidth - 150 + (30 * i), screenHeight + 50, 'heart');
+        var live = lives.create(screenWidth - 150 + (30 * i),  50, 'heart');
         live.anchor.setTo(0.5, 0.5);
         live.scale.setTo(0.2, 0.2);
         live.alpha = 0.85;
