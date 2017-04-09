@@ -7,7 +7,7 @@ Skeleton = function(game, x, y, direction, speed) {
     this.anchor.setTo(0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.xSpeed = direction * speed;
-    this.currentx = x;
+    this.startx = x;
     this.body.gravity.y = 250;
 };
 
@@ -21,7 +21,7 @@ Skeleton.prototype.update = function() {
 };
 
 function moveSkeleton(Skeleton) {
-    if (Skeleton.xSpeed > 0 && Skeleton.x > (Skeleton.currentx + 100) || Skeleton.xSpeed < 0 && Skeleton.x < (Skeleton.currentx))
+    if (Skeleton.xSpeed > 0 && Skeleton.x > (Skeleton.startx + 100) || Skeleton.xSpeed < 0 && Skeleton.x < (Skeleton.startx))
         Skeleton.xSpeed *= -1;
     if (Skeleton.xSpeed > 0) Skeleton.scale.setTo(scale, scale);
     else if (Skeleton.xSpeed < 0) Skeleton.scale.setTo(-scale, scale);

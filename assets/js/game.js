@@ -1,6 +1,7 @@
 var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
     lives, status = 'idle',
-    gameOver, countOfLives = 3;
+    gameOver, countOfLives = 3,
+    enemy;
 var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
@@ -34,16 +35,8 @@ var Game = {
         player.x = 50;
         player.y = 50;
 
-        var skeleton = new Skeleton(game, 50, 124, 1, 40);
-        game.add.existing(skeleton);
-        skeleton = new Skeleton(game, 480, 124, -1, 40);
-        game.add.existing(skeleton);
-        skeleton = new Skeleton(game, 100, 204, 1, 40);
-        game.add.existing(skeleton)
-        skeleton = new Skeleton(game, 480, 204, -1, 40);
-        game.add.existing(skeleton)
-        skeleton = new Skeleton(game, 460, 304, -1, 40);
-        game.add.existing(skeleton)
+        enemy = game.add.group();
+        createEnemy();
 
         lives = game.add.group();
         addLive(countOfLives);
@@ -92,6 +85,9 @@ var Game = {
             player.animations.play('knight_walk');
         } else if (actionKeys.slash.isDown) {
             player.animations.play('knight_slash');
+            if (player.animations.currentFrame.name === 'knight_slash7') {
+                getHit();
+            }
         } else if (actionKeys.block.isDown) {
             player.animations.play('knight_block');
             if (player.animations.currentFrame.name === 'knight_block6') {
@@ -119,8 +115,8 @@ var Game = {
 function restart() {
     addLive(countOfLives);
     status = 'idle';
-    // aliens.removeAll();
-    // createAliens();
+    enemy.removeAll();
+    createEnemy();
     player.revive();
     player.x = 50;
     player.y = 50;
@@ -135,4 +131,43 @@ function addLive(count) {
         live.scale.setTo(0.2, 0.2);
         live.alpha = 0.85;
     }
+}
+
+function getHit() {
+    const range = 40,
+        tmpPos = 15;
+    const touch = (i, scale) => {
+        return scale ?
+            player.world.x < enemy.children[i].world.x &&
+            player.world.x + range >= enemy.children[i].world.x &&
+            player.world.y + tmpPos > enemy.children[i].world.y &&
+            player.world.y - (tmpPos + 5) < enemy.children[i].world.y :
+            player.world.x > enemy.children[i].world.x &&
+            player.world.x - range <= enemy.children[i].world.x &&
+            player.world.y + tmpPos > enemy.children[i].world.y &&
+            player.world.y - (tmpPos + 5) < enemy.children[i].world.y;
+
+    };
+    for (let i = 0; i < enemy.countLiving(); i++) {
+        if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false)))
+            enemy.removeChild(enemy.children[i]);
+    }
+}
+
+function createEnemy() {
+    skeleton = new Skeleton(game, 50, 124, 1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
+    skeleton = new Skeleton(game, 480, 124, -1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
+    skeleton = new Skeleton(game, 100, 204, 1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
+    skeleton = new Skeleton(game, 480, 204, -1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
+    skeleton = new Skeleton(game, 460, 304, -1, 40);
+    game.add.existing(skeleton);
+    enemy.add(skeleton);
 }
