@@ -106,12 +106,14 @@ var Game = {
 };
 
 function addLive(count) {
-    lives.removeAll();
-    for (var i = 0; i < count; i++) {
-        var live = lives.create(screenWidth - 150 + (30 * i),  50, 'heart');
-        live.anchor.setTo(0.5, 0.5);
-        live.scale.setTo(0.2, 0.2);
-        live.alpha = 0.85;
+    if (count <= 5) {
+        lives.removeAll();
+        for (var i = 0; i < count; i++) {
+            var live = lives.create(screenWidth - 150 + (30 * i), 50, 'heart');
+            live.anchor.setTo(0.5, 0.5);
+            live.scale.setTo(0.2, 0.2);
+            live.alpha = 0.85;
+        }
     }
 }
 
