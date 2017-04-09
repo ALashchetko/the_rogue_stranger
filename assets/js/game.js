@@ -1,6 +1,6 @@
 var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
-    lives, status = 'idle',
-    gameOver, countOfLives = 3,
+    lifes, status = 'idle',
+    gameOver, countOflifes = 3,
     enemy;
 let screenWidth = 640,
     screenHeight = 480;
@@ -40,8 +40,8 @@ var Game = {
         enemy = game.add.group();
         createEnemy();
 
-        lives = game.add.group();
-        addLive(countOfLives);
+        lifes = game.add.group();
+        addLife(countOflifes);
 
         var style = {
             font: "bold 50px Arial",
@@ -66,8 +66,8 @@ var Game = {
     update: function() {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
-        lives.x = game.camera.x;
-        lives.y = game.camera.y;
+        lifes.x = game.camera.x;
+        lifes.y = game.camera.y;
         gameOver.x = game.camera.x;
         gameOver.y = game.camera.y;
         getDamageFromTouch();
@@ -80,7 +80,7 @@ var Game = {
             player.body.velocity.x = 100;
             player.scale.setTo(1, 1);
             player.animations.play('knight_walk');
-        } else if (actionKeys.slash.isDown) {
+        } else if (actionKeys.slash.isDown && status === 'idle') {
             player.animations.play('knight_slash');
             if (player.animations.currentFrame.name === 'knight_slash7')
                 getSlash();
@@ -100,19 +100,19 @@ var Game = {
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
-            addLive(lives.countLiving() + 1);
+            addLife(lifes.countLiving() + 1);
         }
     }
 };
 
-function addLive(count) {
+function addLife(count) {
     if (count <= 5) {
-        lives.removeAll();
+        lifes.removeAll();
         for (var i = 0; i < count; i++) {
-            var live = lives.create(screenWidth - 150 + (30 * i), 50, 'heart');
-            live.anchor.setTo(0.5, 0.5);
-            live.scale.setTo(0.2, 0.2);
-            live.alpha = 0.85;
+            var life = lifes.create(screenWidth - 150 + (30 * i), 50, 'heart');
+            life.anchor.setTo(0.5, 0.5);
+            life.scale.setTo(0.2, 0.2);
+            life.alpha = 0.85;
         }
     }
 }
@@ -164,7 +164,7 @@ function getDamageFromTouch() {
 }
 
 function death() {
-    if (!lives.countLiving()) {
+    if (!lifes.countLiving()) {
         status = 'death';
         player.animations.play('knight_death');
         if (player.animations.currentFrame.name === 'knight_death8') {
@@ -176,10 +176,10 @@ function death() {
 }
 
 function getDamage() {
-    let live = lives.getFirstAlive();
-    if (!lives.countLiving()) death();
+    let life = lifes.getFirstAlive();
+    if (!lifes.countLiving()) death();
     else {
-        live.kill();
+        life.kill();
         status = 'idle';
     }
 }
@@ -203,7 +203,7 @@ function createEnemy() {
 }
 
 function restart() {
-    addLive(countOfLives);
+    addLife(countOflifes);
     status = 'idle';
     enemy.removeAll();
     createEnemy();
