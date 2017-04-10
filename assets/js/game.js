@@ -247,6 +247,8 @@ function restart() {
     enemy.removeAll();
     createEnemy();
     player.revive();
+    potionsHealth = potionsHealth.children.map(potionHealth => potionHealth.revive());
+    coins = coins.children.map(coin => coin.revive());
     player.x = start.x;
     player.y = start.y;
     gameOver.visible = false;
