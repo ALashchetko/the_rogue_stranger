@@ -1,4 +1,7 @@
 var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
+    coinsCounterText,
+    coins,
+    coinsCount = 0,
     checkpointCoor = {
         x: 50,
         y: 50,
@@ -12,6 +15,8 @@ var Game = {
     preload: function() {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.image('heart', 'assets/images/heart.png');
+        game.load.image('coin', 'assets/images/coin.png');
+        game.load.image('coin_cunter', 'assets/images/coin_counter.png');
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
@@ -48,6 +53,16 @@ var Game = {
         enemy = game.add.group();
         createEnemy();
 
+        coins = game.add.group();
+        coins.enableBody = true;
+        coinsCounterText = game.add.text(60, 50, ':0', { font: "30px Arial", fill: "#190707" });
+        coinsCounterText.anchor.setTo(0.5, 0.5);
+        coinsCounterText.fixedToCamera = true;
+        coinsCounterImage = game.add.sprite(20, 35, 'coin_cunter');
+        coinsCounterImage.scale.setTo(0.1, 0.1);
+        coinsCounterImage.fixedToCamera = true;
+        map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
+
         lifes = game.add.group();
         addLife(countOflifes);
         lifes.fixedToCamera = true;
@@ -75,6 +90,7 @@ var Game = {
     },
     update: function() {
         game.physics.arcade.collide(player, layer);
+        game.physics.arcade.overlap(player, coins, getCoin, null, this);
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -232,4 +248,10 @@ function setCheckpointCoor() {
     console.log('checkPoint');
     checkpointCoor.x = player.x;
     checkpointCoor.y = player.y;
+}
+
+function getCoin(player, coin) {
+    coinsCount++;
+    coinsCounterText.setText(':' + coinsCount);
+    coin.kill();
 }
