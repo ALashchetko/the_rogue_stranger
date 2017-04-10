@@ -10,7 +10,7 @@
          "width":50,
          "x":0,
          "y":0
-        }, 
+        },
         {
          "draworder":"topdown",
          "height":50,
@@ -27,7 +27,7 @@
                  "width":10,
                  "x":430,
                  "y":62
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -39,7 +39,7 @@
                  "width":10,
                  "x":260,
                  "y":50
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -51,7 +51,7 @@
                  "width":10,
                  "x":513,
                  "y":70
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -63,7 +63,7 @@
                  "width":10,
                  "x":359,
                  "y":151
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -75,7 +75,7 @@
                  "width":10,
                  "x":155,
                  "y":77
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -87,7 +87,7 @@
                  "width":10,
                  "x":118,
                  "y":104
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -99,7 +99,7 @@
                  "width":10,
                  "x":583,
                  "y":104
-                }, 
+                },
                 {
                  "gid":85,
                  "height":10,
@@ -118,7 +118,7 @@
          "width":50,
          "x":0,
          "y":0
-        }, 
+        },
         {
          "draworder":"topdown",
          "height":50,
@@ -135,7 +135,7 @@
                  "width":16,
                  "x":159,
                  "y":126
-                }, 
+                },
                 {
                  "gid":86,
                  "height":16,
@@ -147,7 +147,7 @@
                  "width":16,
                  "x":351,
                  "y":83
-                }, 
+                },
                 {
                  "gid":86,
                  "height":16,
@@ -184,7 +184,7 @@
          "tilecount":84,
          "tileheight":16,
          "tilewidth":16
-        }, 
+        },
         {
          "columns":1,
          "firstgid":85,
@@ -197,7 +197,7 @@
          "tilecount":1,
          "tileheight":10,
          "tilewidth":10
-        }, 
+        },
         {
          "columns":1,
          "firstgid":86,

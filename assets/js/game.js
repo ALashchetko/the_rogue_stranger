@@ -252,6 +252,8 @@ function restart() {
     gameOver.visible = false;
     coinsCount = 0;
     coinsCounterText.setText(':' + coinsCount);
+    potionsHealth = potionsHealth.children.map(potionHealth => potionHealth.revive());
+    coins = coins.children.map(coin => coin.revive());
 }
 
 function getDamageFromTile() {
