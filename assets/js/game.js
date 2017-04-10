@@ -73,7 +73,7 @@ var Game = {
         potionsHealth = game.add.group();
         potionsHealth.enableBody = true;
         map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
-        potionsHealth.scale.setTo(0.8, 0.8);
+        // potionsHealth.scale.setTo(0.5, 0.5);
 
         checkpoints = game.add.group();
         checkpoints.enableBody = true;
