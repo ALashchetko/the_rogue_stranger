@@ -7,17 +7,32 @@
     <script src="assets/js/phaser.min.js"></script>
     <script src="assets/js/skeleton.js"></script>
     <script src="assets/js/game.js"></script>
+    <script src="assets/js/settings.js"></script>
     <script src="assets/js/menu.js"></script>
     <script src="assets/js/main.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     <style>
-        canvas {
+        html,
+        body,
+        canvas,
+        header {
             margin: auto;
-            margin-top: 50px;
-            position: relative;
+        }
+        h1 {
+            font-family: 'Press Start 2P';
+            text-transform: uppercase;
+            text-shadow: 1px 1px 1px white;
+            color: #69728b;
         }
     </style>
 </head>
-<body>
+
+<body style="background-image: url(assets/images/background.jpg)">
+    <header style="text-align:center">
+        <h1>The Rogue Stranger</h1>
+    </header>
+    <div id="game">
+    </div>
 </body>
 
 </html>
