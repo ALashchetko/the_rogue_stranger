@@ -2,6 +2,7 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
     coinsCounterText,
     coins,
     coinsCount = 0,
+    checkpoints,
     checkpointCoor = {
         x: 50,
         y: 50,
@@ -34,7 +35,9 @@ var Game = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         map = game.add.tilemap('level');
         map.addTilesetImage('tiles');
-        map.setCollisionBetween(1, 25);
+        map.setCollisionBetween(1, 12);
+        map.setCollisionBetween(13, 16);
+        map.setCollisionBetween(19, 22);
         map.setTileIndexCallback(31, getDamageFromTile, game);
         map.setTileIndexCallback(32, getDamageFromTile, game);
         map.setTileIndexCallback(33, getDamageFromTile, game);
@@ -72,6 +75,10 @@ var Game = {
         map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
         potionsHealth.scale.setTo(0.8, 0.8);
 
+        checkpoints = game.add.group();
+        checkpoints.enableBody = true;
+        map.createFromObjects('checkpoints', 18, 'tiles', 17, true, false, checkpoints);
+
         lifes = game.add.group();
         initLife(countOflifes);
         lifes.fixedToCamera = true;
@@ -101,6 +108,7 @@ var Game = {
         game.physics.arcade.collide(player, layer);
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
+        game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -261,7 +269,8 @@ function getDamageFromTile() {
     status = 'hit';
 }
 
-function setCheckpointCoor() {
+function setCheckpointCoor(player, checkpoint) {
+    checkpoint.frame = 16;
     checkpointCoor.x = player.x;
     checkpointCoor.y = player.y;
 }
