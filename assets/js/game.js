@@ -42,6 +42,7 @@ var Game = {
 
         lifes = game.add.group();
         addLife(countOflifes);
+        lifes.fixedToCamera = true;
 
         var style = {
             font: "bold 50px Arial",
@@ -53,6 +54,7 @@ var Game = {
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
         gameOver.visible = false;
+        gameOver.fixedToCamera = true;
 
         cursors = game.input.keyboard.createCursorKeys();
         jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -66,10 +68,6 @@ var Game = {
     update: function() {
         game.physics.arcade.collide(player, layer);
         player.body.velocity.x = 0;
-        lifes.x = game.camera.x;
-        lifes.y = game.camera.y;
-        gameOver.x = game.camera.x;
-        gameOver.y = game.camera.y;
         getDamageFromTouch();
         death();
         if (cursors.left.isDown && status === 'idle') {
@@ -157,7 +155,8 @@ function getDamageFromTouch() {
         if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
             status = 'hit';
             player.animations.play('knight_hit');
-            enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
+            if (player.scale.x > 0) enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
+            else enemy.children[i].scale.x < 0 ? player.body.velocity.x = hitSpeed : player.body.velocity.x = hitSpeed * 2.5;
             if (player.animations.currentFrame.name === 'knight_death2') getDamage();
         }
     }
