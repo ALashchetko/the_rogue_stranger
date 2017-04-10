@@ -77,7 +77,7 @@ var Game = {
 
         checkpoints = game.add.group();
         checkpoints.enableBody = true;
-        map.createFromObjects('checkpoints', 18, 'tiles', 17, true, false, checkpoints);
+        map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
 
         lifes = game.add.group();
         initLife(countOflifes);
@@ -259,8 +259,11 @@ function restart() {
     gameOver.visible = false;
     coinsCount = 0;
     coinsCounterText.setText(':' + coinsCount);
-    potionsHealth = potionsHealth.children.map(potionHealth => potionHealth.revive());
-    coins = coins.children.map(coin => coin.revive());
+    potionsHealth.children.map(potionHealth => potionHealth.revive());
+    coins.children.map(coin => coin.revive());
+    checkpointCoor.x = start.x;
+    checkpointCoor.y = start.y;
+    checkpoints.children.map(checkpoint => checkpoint.frame = 16);
 }
 
 function getDamageFromTile() {
@@ -270,7 +273,7 @@ function getDamageFromTile() {
 }
 
 function setCheckpointCoor(player, checkpoint) {
-    checkpoint.frame = 16;
+    checkpoint.frame = 17;
     checkpointCoor.x = player.x;
     checkpointCoor.y = player.y;
 }
