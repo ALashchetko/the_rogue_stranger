@@ -77,13 +77,13 @@ var Game = {
         initLife(countOflifes);
         lifes.fixedToCamera = true;
 
-        var style = {
-            font: "bold 50px Arial",
+        const style = {
+            font: "bold 30px Press Start 2P",
             fill: "#fff",
             boundsAlignH: "center",
             boundsAlignV: "middle"
         };
-        gameOver = game.add.text(0, 0, "   Game over! \nClick to restart", style);
+        gameOver = game.add.text(0, 0, "\t\t\tGame over! \nClick to restart", style);
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
         gameOver.visible = false;
@@ -170,7 +170,6 @@ function getSlash() {
             player.world.x - range <= enemy.children[i].world.x &&
             player.world.y + tmpPos > enemy.children[i].world.y &&
             player.world.y - (tmpPos + 5) < enemy.children[i].world.y;
-
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false)))
@@ -196,10 +195,8 @@ function getDamageFromTouch() {
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
             status = 'hit';
-            player.animations.play('knight_hit');
             if (player.scale.x > 0) enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
             else enemy.children[i].scale.x < 0 ? player.body.velocity.x = hitSpeed : player.body.velocity.x = hitSpeed * 2.5;
-            if (player.animations.currentFrame.name === 'knight_death2') getDamage();
         }
     }
 }
@@ -261,8 +258,6 @@ function getDamageFromTile() {
     player.x = checkpointCoor.x;
     player.y = checkpointCoor.y;
     status = 'hit';
-    player.animations.play('knight_hit');
-    if (player.animations.currentFrame.name === 'knight_death2') getDamage();
 }
 
 function setCheckpointCoor() {
