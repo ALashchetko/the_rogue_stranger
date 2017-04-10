@@ -9,15 +9,19 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
     lifes, status = 'idle',
     gameOver, countOflifes = 3,
     enemy;
-let screenWidth = 640,
+const screenWidth = 640,
     screenHeight = 480;
+let start = {
+    x: 50,
+    y: 50
+};
 var Game = {
     preload: function() {
-        game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.image('heart', 'assets/images/heart.png');
-        game.load.image('coin', 'assets/images/coin.png');
         game.load.image('potion_health', 'assets/images/potion_health.png');
+        game.load.image('coin', 'assets/images/coin.png');
         game.load.image('coin_cunter', 'assets/images/coin_counter.png');
+        game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
@@ -56,13 +60,13 @@ var Game = {
 
         coins = game.add.group();
         coins.enableBody = true;
+        map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
         coinsCounterText = game.add.text(60, 50, ':0', { font: "30px Arial", fill: "#190707" });
         coinsCounterText.anchor.setTo(0.5, 0.5);
         coinsCounterText.fixedToCamera = true;
         coinsCounterImage = game.add.sprite(20, 35, 'coin_cunter');
         coinsCounterImage.scale.setTo(0.1, 0.1);
         coinsCounterImage.fixedToCamera = true;
-        map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
 
         potionsHealth = game.add.group();
         potionsHealth.enableBody = true;
@@ -240,15 +244,17 @@ function createEnemy() {
 }
 
 function restart() {
+    status = 'idle';
     lifes.removeAll();
     initLife(countOflifes);
-    status = 'idle';
     enemy.removeAll();
     createEnemy();
     player.revive();
-    player.x = 50;
-    player.y = 50;
+    player.x = start.x;
+    player.y = start.y;
     gameOver.visible = false;
+    coinsCount = 0;
+    coinsCounterText.setText(':' + coinsCount);
 }
 
 function getDamageFromTile() {
