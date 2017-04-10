@@ -240,6 +240,7 @@ function createEnemy() {
 }
 
 function restart() {
+    lifes.removeAll();
     initLife(countOflifes);
     status = 'idle';
     enemy.removeAll();
