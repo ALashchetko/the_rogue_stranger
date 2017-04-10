@@ -61,7 +61,7 @@ var Game = {
         coins = game.add.group();
         coins.enableBody = true;
         map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
-        coinsCounterText = game.add.text(70, 53, ':0', { font: "25px Press Start 2P", fill: "#190707" });
+        coinsCounterText = game.add.text(60, 50, ':0', { font: "30px Arial", fill: "#190707" });
         coinsCounterText.anchor.setTo(0.5, 0.5);
         coinsCounterText.fixedToCamera = true;
         coinsCounterImage = game.add.sprite(20, 35, 'coin_cunter');
