@@ -134,20 +134,19 @@ var Game = {
 };
 
 function addLife(count) {
-    if (count === 5) {
-        lifes.removeAll();
+    console.log('addHealth');
+    if (count === 5 && lifes.countLiving() === 0) {
         for (var i = 0; i < count; i++) {
             var life = lifes.create(screenWidth - (30 * i) - 50, 50, 'heart');
             life.anchor.setTo(0.5, 0.5);
             life.scale.setTo(0.2, 0.2);
             life.alpha = 0.85;
         }
-    } else {
-        var life = lifes.create(screenWidth - (30 * count) - 50, 50, 'heart');
-        life.anchor.setTo(0.5, 0.5);
-        life.scale.setTo(0.2, 0.2);
-        life.alpha = 0.85;
+    } else if (count < 5 && lifes.countLiving() !== 0) {
+        var life = lifes.getChildAt(count);
+        life.revive();
     }
+    console.log(lifes);
 }
 
 function getSlash() {
@@ -210,12 +209,15 @@ function death() {
 }
 
 function getDamage() {
+    console.log('getDamage');
+    console.log(lifes.countLiving() - 1);
     let life = lifes.getChildAt(lifes.countLiving() - 1);
     if (!lifes.countLiving()) death();
     else {
         life.kill();
         status = 'idle';
     }
+    console.log(lifes);
 }
 
 function createEnemy() {
