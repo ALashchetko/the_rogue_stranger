@@ -259,8 +259,10 @@ function restart() {
     gameOver.visible = false;
     coinsCount = 0;
     coinsCounterText.setText(':' + coinsCount);
-    potionsHealth.children.map(potionHealth => potionHealth.revive());
-    coins.children.map(coin => coin.revive());
+    coins.removeAll();
+    map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
+    potionsHealth.removeAll();
+    map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
     checkpointCoor.x = start.x;
     checkpointCoor.y = start.y;
     checkpoints.children.map(checkpoint => checkpoint.frame = 16);
