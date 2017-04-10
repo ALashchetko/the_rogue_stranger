@@ -7,7 +7,7 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
         y: 50,
     },
     lifes, status = 'idle',
-    gameOver, countOflifes = 3,
+    gameOver, countOflifes = 5,
     enemy;
 let screenWidth = 640,
     screenHeight = 480;
@@ -16,6 +16,7 @@ var Game = {
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.image('heart', 'assets/images/heart.png');
         game.load.image('coin', 'assets/images/coin.png');
+        game.load.image('potion_health', 'assets/images/potion_health.png');
         game.load.image('coin_cunter', 'assets/images/coin_counter.png');
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
@@ -62,6 +63,11 @@ var Game = {
         coinsCounterImage.scale.setTo(0.1, 0.1);
         coinsCounterImage.fixedToCamera = true;
         map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
+
+        potionsHealth = game.add.group();
+        potionsHealth.enableBody = true;
+        map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
+        potionsHealth.scale.setTo(0.8, 0.8);
 
         lifes = game.add.group();
         addLife(countOflifes);
@@ -122,20 +128,25 @@ var Game = {
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
-            addLife(lifes.countLiving() + 1);
+            addLife(lifes.countLiving());
         }
     }
 };
 
 function addLife(count) {
-    if (count <= 5) {
+    if (count === 5) {
         lifes.removeAll();
         for (var i = 0; i < count; i++) {
-            var life = lifes.create(screenWidth - 150 + (30 * i), 50, 'heart');
+            var life = lifes.create(screenWidth - (30 * i) - 50, 50, 'heart');
             life.anchor.setTo(0.5, 0.5);
             life.scale.setTo(0.2, 0.2);
             life.alpha = 0.85;
         }
+    } else {
+        var life = lifes.create(screenWidth - (30 * count) - 50, 50, 'heart');
+        life.anchor.setTo(0.5, 0.5);
+        life.scale.setTo(0.2, 0.2);
+        life.alpha = 0.85;
     }
 }
 
@@ -199,7 +210,7 @@ function death() {
 }
 
 function getDamage() {
-    let life = lifes.getFirstAlive();
+    let life = lifes.getChildAt(lifes.countLiving() - 1);
     if (!lifes.countLiving()) death();
     else {
         life.kill();
