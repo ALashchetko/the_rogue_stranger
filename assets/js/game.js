@@ -70,7 +70,7 @@ var Game = {
         potionsHealth.scale.setTo(0.8, 0.8);
 
         lifes = game.add.group();
-        addLife(countOflifes);
+        initLife(countOflifes);
         lifes.fixedToCamera = true;
 
         var style = {
@@ -97,6 +97,7 @@ var Game = {
     update: function() {
         game.physics.arcade.collide(player, layer);
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
+        game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -114,6 +115,7 @@ var Game = {
                 getSlash();
         } else if (actionKeys.block.isDown) {
             player.animations.play('knight_block');
+            addLife();
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
@@ -128,25 +130,28 @@ var Game = {
         if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
-            addLife(lifes.countLiving());
         }
     }
 };
 
-function addLife(count) {
-    console.log('addHealth');
-    if (count === 5 && lifes.countLiving() === 0) {
-        for (var i = 0; i < count; i++) {
-            var life = lifes.create(screenWidth - (30 * i) - 50, 50, 'heart');
-            life.anchor.setTo(0.5, 0.5);
-            life.scale.setTo(0.2, 0.2);
-            life.alpha = 0.85;
-        }
-    } else if (count < 5 && lifes.countLiving() !== 0) {
-        var life = lifes.getChildAt(count);
+
+function initLife(count) {
+    for (var i = 0; i < count; i++) {
+        var life = lifes.create(screenWidth - (30 * i) - 50, 50, 'heart');
+        life.anchor.setTo(0.5, 0.5);
+        life.scale.setTo(0.2, 0.2);
+        life.alpha = 0.85;
+    }
+}
+
+
+function addLife(player, potionHealth) {
+    var lifesCount = lifes.countLiving()
+    if (lifesCount < 5 && lifesCount !== 0) {
+        var life = lifes.getChildAt(lifesCount);
         life.revive();
     }
-    console.log(lifes);
+    potionHealth.kill();
 }
 
 function getSlash() {
