@@ -137,7 +137,7 @@ var Game = {
         } else if (status === 'idle') {
             player.animations.play('knight_idle');
         }
-        if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
+        if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer && status === 'idle') {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
         }
@@ -230,19 +230,19 @@ function getDamage() {
 }
 
 function createEnemy() {
-    skeleton = new Skeleton(game, 75, 124, 1, 40);
+    skeleton = new Skeleton(game, 75, 124, 1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    skeleton = new Skeleton(game, 480, 124, -1, 40);
+    skeleton = new Skeleton(game, 480, 124, -1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    skeleton = new Skeleton(game, 100, 304, 1, 40);
+    skeleton = new Skeleton(game, 100, 304, 1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    skeleton = new Skeleton(game, 460, 304, -1, 40);
+    skeleton = new Skeleton(game, 460, 304, -1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    skeleton = new Skeleton(game, 550, 304, -1, 40);
+    skeleton = new Skeleton(game, 550, 304, -1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
 }
