@@ -1,14 +1,15 @@
-var scale = 0.7;
+const scale = 0.7;
 Skeleton = function(game, x, y, direction, speed) {
     Phaser.Sprite.call(this, game, x, y, "skeleton");
     this.animations.add('skeleton_walk', Phaser.Animation.generateFrameNames('skeleton_walk', 0, 5), 8, true);
-    this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 8, true);
+    this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 5, true);
     this.scale.setTo(scale, scale);
     this.anchor.setTo(0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.xSpeed = direction * speed;
     this.startx = x;
     this.body.gravity.y = 250;
+    this.skeleton_status = 'idle';
 };
 
 Skeleton.prototype = Object.create(Phaser.Sprite.prototype);
@@ -17,12 +18,25 @@ Skeleton.prototype.constructor = Skeleton;
 Skeleton.prototype.update = function() {
     game.physics.arcade.collide(this, layer, moveSkeleton);
     this.body.velocity.x = this.xSpeed;
-    this.animations.play('skeleton_walk');
+    atack(this);
+    if (this.skeleton_status === 'idle') this.animations.play('skeleton_walk');
 };
 
 function moveSkeleton(Skeleton) {
-    if (Skeleton.xSpeed > 0 && Skeleton.x > (Skeleton.startx + 100) || Skeleton.xSpeed < 0 && Skeleton.x < (Skeleton.startx))
+    if (Skeleton.xSpeed > 0 && Skeleton.x > Skeleton.startx + 100 || Skeleton.xSpeed < 0 && Skeleton.x < Skeleton.startx)
         Skeleton.xSpeed *= -1;
     if (Skeleton.xSpeed > 0) Skeleton.scale.setTo(scale, scale);
     else if (Skeleton.xSpeed < 0) Skeleton.scale.setTo(-scale, scale);
+}
+
+function atack(Skeleton) {
+    if ((player.y > Skeleton.y - 30 && player.y < Skeleton.y + 30 && player.x + 200 > Skeleton.x && player.x - 200 < Skeleton.x && ((Skeleton.scale.x < 0 && player.x < Skeleton.x) || (Skeleton.scale.x > 0 && player.x > Skeleton.x))) || Skeleton.skeleton_status === 'atack') {
+        Skeleton.skeleton_status = 'atack';
+        Skeleton.animations.play('skeleton_throw');
+        Skeleton.body.velocity.x = 0;
+        if (Skeleton.animations.currentFrame.name === 'skeleton_throw5') {
+            Skeleton.skeleton_status = 'idle';
+            Skeleton.body.velocity.x = Skeleton.xSpeed;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
+var map, layer, player, Background, cursors, jumpKey, actionKeys,
     coinsCounterText,
     coins,
     coinsCount = 0,
@@ -52,7 +52,7 @@ var Game = {
         player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
         player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 6, true);
         game.physics.enable(player);
-        player.body.gravity.y = 250;
+        player.body.gravity.y = 300;
         player.body.bounce.y = 0.1;
         player.anchor.setTo(0.5, 0.5);
         player.x = 50;
@@ -138,9 +138,8 @@ var Game = {
         } else if (status === 'idle') {
             player.animations.play('knight_idle');
         }
-        if (actionKeys.jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer && status === 'idle') {
+        if (actionKeys.jumpKey.isDown && player.body.onFloor() && status === 'idle') {
             player.body.velocity.y = -200;
-            jumpTimer = game.time.now + 650;
         }
         if (actionKeys.pause.isDown){
             game.state.start('Menu');
@@ -189,7 +188,7 @@ function getSlash() {
 }
 
 function getDamageFromTouch() {
-    const range = 5,
+    const range = 10,
         tmpPos = 15,
         hitSpeed = 500;
     const touch = (i, scale) => {
