@@ -1,4 +1,8 @@
 var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
+    checkpointCoor = {
+        x: 50,
+        y: 50,
+    },
     lifes, status = 'idle',
     gameOver, countOflifes = 3,
     enemy;
@@ -21,6 +25,10 @@ var Game = {
         map = game.add.tilemap('level');
         map.addTilesetImage('tiles');
         map.setCollisionBetween(1, 25);
+        map.setTileIndexCallback(31, getDamageFromTile, game);
+        map.setTileIndexCallback(32, getDamageFromTile, game);
+        map.setTileIndexCallback(33, getDamageFromTile, game);
+        map.setTileIndexCallback(18, setCheckpointCoor, game);
         layer = map.createLayer('Tile Layer 1');
         layer.resizeWorld();
         player = game.add.sprite(32, game.world.height - 150, 'knight');
@@ -210,4 +218,18 @@ function restart() {
     player.x = 50;
     player.y = 50;
     gameOver.visible = false;
+}
+
+function getDamageFromTile() {
+    player.x = checkpointCoor.x;
+    player.y = checkpointCoor.y;
+    status = 'hit';
+    player.animations.play('knight_hit');
+    if (player.animations.currentFrame.name === 'knight_death2') getDamage();
+}
+
+function setCheckpointCoor() {
+    console.log('checkPoint');
+    checkpointCoor.x = player.x;
+    checkpointCoor.y = player.y;
 }
