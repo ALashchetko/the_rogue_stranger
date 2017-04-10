@@ -10,6 +10,7 @@ const Settings = {
         game.load.image('a_button','assets/images/Settings/a_button.png');
         game.load.image('d_button','assets/images/Settings/d_button.png');
         game.load.image('k_button','assets/images/Settings/k_button.png');
+        game.load.image('esc_button','assets/images/Settings/esc_button.png');
         game.load.image('arrows','assets/images/Settings/arrows.png');
         game.load.image('space','assets/images/Settings/space.png');
     },
@@ -19,13 +20,14 @@ const Settings = {
         Background.drawRect(0, 0, 800, 640);
         Background.endFill();
 
-        controller('a_button', 'Atack', 100, 180);
-        controller('d_button', 'Shield', 210, 180);
-        controller('k_button', 'Suicide', game.world.centerX, 180);
-        controller('arrows', 'Move', 500, 180);
-        controller('space', 'Jump', game.world.centerX, 300);
+        controller('a_button', 'Atack', 75, 180);
+        controller('d_button', 'Shield', 170, 180);
+        controller('k_button', 'Suicide', 280, 180);
+        controller('esc_button', 'Menu', 380, 180);
+        controller('arrows', 'Move', 520, 180);
+        controller('space', 'Jump', 320, 300);
 
-        const back = this.add.button(game.world.centerX - 5, game.world.centerY + 150, 'back', this.menu, this);
+        const back = this.add.button(315, 410, 'back', this.menu, this);
         back.anchor.setTo(0.5, 0.5);
         back.scale.setTo(0.2, 0.2);
     },
@@ -34,10 +36,10 @@ const Settings = {
     }
 }
 
-function controller(button, text, x, y) {
-    const t = game.add.text(x, y - 40, text, style);
-    t.setShadow(1, 1, 'rgba(0,0,0,0.5)', 2);
-    t.anchor.setTo(0.5, 0.5);
+function controller(button, message, x, y) {
+    const text = game.add.text(x, y - 40, message, style);
+    text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 2);
+    text.anchor.setTo(0.5, 0.5);
     const image = game.add.sprite(x, y, button);
     image.scale.setTo(0.5, 0.5);
     image.anchor.setTo(0.5, 0.5);

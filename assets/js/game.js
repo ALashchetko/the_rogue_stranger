@@ -73,7 +73,6 @@ var Game = {
         potionsHealth = game.add.group();
         potionsHealth.enableBody = true;
         map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
-        // potionsHealth.scale.setTo(0.5, 0.5);
 
         checkpoints = game.add.group();
         checkpoints.enableBody = true;
@@ -96,13 +95,15 @@ var Game = {
         gameOver.fixedToCamera = true;
 
         cursors = game.input.keyboard.createCursorKeys();
-        jumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         actionKeys = game.input.keyboard.addKeys({
             'slash': Phaser.KeyCode.A,
             'block': Phaser.KeyCode.D,
-            'death': Phaser.KeyCode.K
+            'death': Phaser.KeyCode.K,
+            'jumpKey': Phaser.KeyCode.SPACEBAR,
+            'pause': Phaser.KeyCode.ESC
         })
         game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
+        restart();
     },
     update: function() {
         game.physics.arcade.collide(player, layer);
@@ -137,9 +138,12 @@ var Game = {
         } else if (status === 'idle') {
             player.animations.play('knight_idle');
         }
-        if (jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer && status === 'idle') {
+        if (actionKeys.jumpKey.isDown && player.body.onFloor() && game.time.now > jumpTimer && status === 'idle') {
             player.body.velocity.y = -200;
             jumpTimer = game.time.now + 650;
+        }
+        if (actionKeys.pause.isDown){
+            game.state.start('Menu');
         }
     }
 };
@@ -201,7 +205,7 @@ function getDamageFromTouch() {
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
-            status = 'hit';
+            if (player.animations.currentFrame.name != 'knight_block6') status = 'hit';
             if (player.scale.x > 0) enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
             else enemy.children[i].scale.x < 0 ? player.body.velocity.x = hitSpeed : player.body.velocity.x = hitSpeed * 2.5;
         }
