@@ -115,7 +115,6 @@ var Game = {
                 getSlash();
         } else if (actionKeys.block.isDown) {
             player.animations.play('knight_block');
-            addLife();
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
@@ -214,15 +213,12 @@ function death() {
 }
 
 function getDamage() {
-    console.log('getDamage');
-    console.log(lifes.countLiving() - 1);
     let life = lifes.getChildAt(lifes.countLiving() - 1);
     if (!lifes.countLiving()) death();
     else {
         life.kill();
         status = 'idle';
     }
-    console.log(lifes);
 }
 
 function createEnemy() {
@@ -244,7 +240,7 @@ function createEnemy() {
 }
 
 function restart() {
-    addLife(countOflifes);
+    initLife(countOflifes);
     status = 'idle';
     enemy.removeAll();
     createEnemy();
@@ -263,7 +259,6 @@ function getDamageFromTile() {
 }
 
 function setCheckpointCoor() {
-    console.log('checkPoint');
     checkpointCoor.x = player.x;
     checkpointCoor.y = player.y;
 }
