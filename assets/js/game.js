@@ -7,7 +7,7 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys, jumpTimer = 0,
         y: 50,
     },
     lifes, status = 'idle',
-    gameOver, countOflifes = 5,
+    gameOver, countOflifes = 3,
     enemy;
 let screenWidth = 640,
     screenHeight = 480;
@@ -146,7 +146,7 @@ function initLife(count) {
 
 function addLife(player, potionHealth) {
     var lifesCount = lifes.countLiving()
-    if (lifesCount < 5 && lifesCount !== 0) {
+    if (lifesCount < countOflifes && lifesCount !== 0) {
         var life = lifes.getChildAt(lifesCount);
         life.revive();
     }
