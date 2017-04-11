@@ -19,11 +19,9 @@ Slime.prototype.constructor = Slime;
 Slime.prototype.update = function() {
     game.physics.arcade.collide(this, layer);
     moveSlime(this);
-    if (this.body.onFloor()){
-        slime.body.velocity.x = 0;
-        jump(this);
-    }
-    else if (this.slime_status === 'jump') {
+    jump(this);
+
+    if (this.slime_status === 'jump') {
         this.animations.play('slime_jump');
         if (this.animations.currentFrame.name === 'slime_jump8') {
             this.slime_status = 'idle';
@@ -40,6 +38,12 @@ function moveSlime(slime) {
 }
 
 function jump(slime) {
+    if (slime.body.onFloor()) {
+        slime.body.velocity.x = 0;
         slime.slime_status = 'jump';
-        setTimeout(() => slime.body.velocity = {x : slime.xSpeed, y : -80}, 500);
+        setTimeout(() => slime.body.velocity = {
+            x: slime.xSpeed,
+            y: -100
+        }, 500);
+    }
 }
