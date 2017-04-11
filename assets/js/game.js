@@ -26,6 +26,7 @@ var Game = {
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
+        game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -125,7 +126,7 @@ var Game = {
             player.animations.play('knight_slash');
             if (player.animations.currentFrame.name === 'knight_slash7')
                 getSlash();
-        } else if (actionKeys.block.isDown) {
+        } else if (actionKeys.block.isDown && status === 'idle') {
             player.animations.play('knight_block');
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
@@ -147,7 +148,6 @@ var Game = {
     }
 };
 
-
 function initLife(count) {
     for (var i = 0; i < count; i++) {
         var life = lifes.create(screenWidth - (30 * i) - 50, 50, 'heart');
@@ -156,7 +156,6 @@ function initLife(count) {
         life.alpha = 0.85;
     }
 }
-
 
 function addLife(player, potionHealth) {
     var lifesCount = lifes.countLiving()
@@ -168,18 +167,18 @@ function addLife(player, potionHealth) {
 }
 
 function getSlash() {
-    const range = 40,
-        tmpPos = 15;
+    const x_range = 40,
+        y_range = 15;
     const hit = (i, scale) => {
         return scale ?
             player.world.x < enemy.children[i].world.x &&
-            player.world.x + range >= enemy.children[i].world.x &&
-            player.world.y + tmpPos > enemy.children[i].world.y &&
-            player.world.y - (tmpPos + 5) < enemy.children[i].world.y :
+            player.world.x + x_range >= enemy.children[i].world.x &&
+            player.world.y + y_range > enemy.children[i].world.y &&
+            player.world.y - (y_range + 5) < enemy.children[i].world.y :
             player.world.x > enemy.children[i].world.x &&
-            player.world.x - range <= enemy.children[i].world.x &&
-            player.world.y + tmpPos > enemy.children[i].world.y &&
-            player.world.y - (tmpPos + 5) < enemy.children[i].world.y;
+            player.world.x - x_range <= enemy.children[i].world.x &&
+            player.world.y + y_range > enemy.children[i].world.y &&
+            player.world.y - (y_range + 5) < enemy.children[i].world.y;
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false)))
@@ -188,19 +187,19 @@ function getSlash() {
 }
 
 function getDamageFromTouch() {
-    const range = 10,
-        tmpPos = 15,
+    const x_range = 10,
+        y_range = 15,
         hitSpeed = 500;
     const touch = (i, scale) => {
         return scale ?
             player.world.x < enemy.children[i].world.x &&
-            player.world.x + range >= enemy.children[i].world.x &&
-            player.world.y + tmpPos >= enemy.children[i].world.y &&
-            player.world.y - (tmpPos + 5) <= enemy.children[i].world.y :
+            player.world.x + x_range >= enemy.children[i].world.x &&
+            player.world.y + y_range >= enemy.children[i].world.y &&
+            player.world.y - (y_range + 5) <= enemy.children[i].world.y :
             player.world.x > enemy.children[i].world.x &&
-            player.world.x - range <= enemy.children[i].world.x &&
-            player.world.y + tmpPos >= enemy.children[i].world.y &&
-            player.world.y - (tmpPos + 5) <= enemy.children[i].world.y;
+            player.world.x - x_range <= enemy.children[i].world.x &&
+            player.world.y + y_range >= enemy.children[i].world.y &&
+            player.world.y - (y_range + 5) <= enemy.children[i].world.y;
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
@@ -248,6 +247,9 @@ function createEnemy() {
     skeleton = new Skeleton(game, 550, 304, -1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
+    slime = new Slime(game, 70, 70, 1, 50);
+    game.add.existing(slime);
+    enemy.add(slime);
 }
 
 function restart() {

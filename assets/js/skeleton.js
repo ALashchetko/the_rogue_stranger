@@ -1,13 +1,13 @@
-const scale = 0.7;
+const skeleton_scale = 0.7;
 Skeleton = function(game, x, y, direction, speed) {
     Phaser.Sprite.call(this, game, x, y, "skeleton");
     this.animations.add('skeleton_walk', Phaser.Animation.generateFrameNames('skeleton_walk', 0, 5), 8, true);
     this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 5, true);
-    this.scale.setTo(scale, scale);
+    this.scale.setTo(skeleton_scale, skeleton_scale);
     this.anchor.setTo(0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.xSpeed = direction * speed;
-    this.startx = x;
+    this.startX = x;
     this.body.gravity.y = 250;
     this.skeleton_status = 'idle';
 };
@@ -23,10 +23,10 @@ Skeleton.prototype.update = function() {
 };
 
 function moveSkeleton(Skeleton) {
-    if (Skeleton.xSpeed > 0 && Skeleton.x > Skeleton.startx + 100 || Skeleton.xSpeed < 0 && Skeleton.x < Skeleton.startx)
+    if (Skeleton.xSpeed > 0 && Skeleton.x > Skeleton.startX + 100 || Skeleton.xSpeed < 0 && Skeleton.x < Skeleton.startX)
         Skeleton.xSpeed *= -1;
-    if (Skeleton.xSpeed > 0) Skeleton.scale.setTo(scale, scale);
-    else if (Skeleton.xSpeed < 0) Skeleton.scale.setTo(-scale, scale);
+    if (Skeleton.xSpeed > 0) Skeleton.scale.setTo(skeleton_scale, skeleton_scale);
+    else if (Skeleton.xSpeed < 0) Skeleton.scale.setTo(-skeleton_scale, skeleton_scale);
 }
 
 function atack(Skeleton) {
