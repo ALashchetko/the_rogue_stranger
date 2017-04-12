@@ -5,6 +5,7 @@ const Settings = {
         game.load.image('d_button', 'assets/images/Settings/d_button.png');
         game.load.image('k_button', 'assets/images/Settings/k_button.png');
         game.load.image('esc_button', 'assets/images/Settings/esc_button.png');
+        game.load.image('c_button', 'assets/images/Settings/c_button.png');
         game.load.image('arrows', 'assets/images/Settings/arrows.png');
         game.load.image('space', 'assets/images/Settings/space.png');
     },
@@ -20,12 +21,13 @@ const Settings = {
         const controls = game.add.text(320, 80, "CONTROLS", style);
         controls.setShadow(1, 1, 'rgba(0,0,0,0.5)', 2);
         controls.anchor.setTo(0.5, 0.5);
-        controller('a_button', 'Atack', 75, 180);
-        controller('d_button', 'Shield', 170, 180);
-        controller('k_button', 'Suicide', 280, 180);
-        controller('esc_button', 'Menu', 380, 180);
-        controller('arrows', 'Move', 520, 180);
-        controller('space', 'Jump', 320, 300);
+        controller('a_button', 'Atack', 95, 180);
+        controller('d_button', 'Shield', 190, 180);
+        controller('k_button', 'Suicide', 300, 180);
+        controller('esc_button', 'Menu', 390, 180);
+        controller('c_button', 'Additional \n\t\tWeapon', 510, 180);
+        controller('arrows', 'Move', 440, 300);
+        controller('space', 'Jump', 200, 300);
 
         const back = this.add.button(315, 410, 'back', this.menu, this);
         back.anchor.setTo(0.5, 0.5);

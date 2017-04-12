@@ -13,7 +13,8 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys,
     gameOver, countOflifes = 3,
     additionalWeapon,
     daggers,
-    enemy;
+    enemy,
+    bone;
 const screenWidth = 640,
     screenHeight = 480;
 let start = {
@@ -28,6 +29,7 @@ var Game = {
         game.load.image('dagger_active', 'assets/images/dagger_active.png');
         game.load.image('dagger_on_ground', 'assets/images/dagger_on_ground.png');
         game.load.image('coin_cunter', 'assets/images/coin_counter.png');
+        game.load.image('skeleton_bone', 'assets/images/skeleton/skeleton_bone.png');
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
@@ -67,8 +69,6 @@ var Game = {
 
         enemy = game.add.group();
         createEnemy();
-
-
 
         daggers = game.add.group();
         daggers.enableBody = true;
@@ -122,7 +122,7 @@ var Game = {
     },
     update: function() {
         game.physics.arcade.collide(player, layer);
-        game.physics.arcade.collide(additionalWeapon, layer, additionalWeaponCollision);
+        game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
         game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
@@ -145,9 +145,8 @@ var Game = {
                 getSlash();
         } else if (actionKeys.block.isDown && status === 'idle') {
             player.animations.play('knight_block');
-            if (player.animations.currentFrame.name === 'knight_block6') {
+            if (player.animations.currentFrame.name === 'knight_block6')
                 player.animations.paused = true;
-            }
         } else if (actionKeys.additionalWeapon.isDown && status === 'idle') {
             throwAdditionalWeapon();
         } else if (actionKeys.death.isDown || status === 'hit') {
@@ -365,9 +364,5 @@ function throwAdditionalWeapon() {
 
 function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
     enemy.destroy();
-    additionalWeapon.kill();
-}
-
-function additionalWeaponCollision() {
     additionalWeapon.kill();
 }

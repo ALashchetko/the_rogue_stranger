@@ -10,11 +10,10 @@ Skeleton = function(game, x, y, direction, speed) {
     this.startX = x;
     this.body.gravity.y = 250;
     this.skeleton_status = 'idle';
+    this.bone_status = 'wait';
 };
-
 Skeleton.prototype = Object.create(Phaser.Sprite.prototype);
 Skeleton.prototype.constructor = Skeleton;
-
 Skeleton.prototype.update = function() {
     game.physics.arcade.collide(this, layer, moveSkeleton);
     this.body.velocity.x = this.xSpeed;
@@ -34,9 +33,35 @@ function atack(Skeleton) {
         Skeleton.skeleton_status = 'atack';
         Skeleton.animations.play('skeleton_throw');
         Skeleton.body.velocity.x = 0;
+        if (Skeleton.animations.currentFrame.name === 'skeleton_throw3' && Skeleton.bone_status != 'throw') {
+            let bone = new Bone(game, Skeleton.x, Skeleton.y, Skeleton.scale.x, 120);
+            game.add.existing(bone);
+            Skeleton.bone_status = 'throw';
+        }
         if (Skeleton.animations.currentFrame.name === 'skeleton_throw5') {
             Skeleton.skeleton_status = 'idle';
+            Skeleton.bone_status = 'wait';
             Skeleton.body.velocity.x = Skeleton.xSpeed;
         }
     }
 }
+
+Bone = function(game, x, y, direction, speed) {
+    Phaser.Sprite.call(this, game, x - 20, y - 6, "skeleton_bone");
+    this.scale.setTo(direction, direction);
+    this.anchor.setTo(0.5, 0.5);
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.xSpeed = direction * speed;
+    this.startX = x;
+};
+
+Bone.prototype = Object.create(Phaser.Sprite.prototype);
+Bone.prototype.constructor = Bone;
+Bone.prototype.update = function() {
+    game.physics.arcade.collide(this, layer, () => this.kill());
+    game.physics.arcade.overlap(this, player, () => {
+        this.kill();
+        status = 'hit';
+    }, null, this);
+    if (this.alive) this.body.velocity.x = this.xSpeed;
+};
