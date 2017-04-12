@@ -121,7 +121,7 @@
                  "type":"",
                  "visible":true,
                  "width":10,
-                 "x":419,
+                 "x":410,
                  "y":100
                 }, 
                 {
@@ -326,6 +326,78 @@
         {
          "draworder":"topdown",
          "height":50,
+         "name":"daggers",
+         "objects":[
+                {
+                 "gid":87,
+                 "height":16,
+                 "id":63,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":459,
+                 "y":114
+                }, 
+                {
+                 "gid":87,
+                 "height":16,
+                 "id":64,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":305,
+                 "y":83
+                }, 
+                {
+                 "gid":87,
+                 "height":16,
+                 "id":65,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":38,
+                 "y":120
+                }, 
+                {
+                 "gid":87,
+                 "height":16,
+                 "id":66,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":450,
+                 "y":364
+                }, 
+                {
+                 "gid":87,
+                 "height":16,
+                 "id":67,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":580,
+                 "y":169
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "width":50,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "height":50,
          "name":"h_potions",
          "objects":[
                 {
@@ -371,7 +443,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":62,
+ "nextobjectid":68,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":16,
@@ -406,10 +478,23 @@
          "columns":1,
          "firstgid":86,
          "image":"potion_health.png",
+         "imageheight":22,
+         "imagewidth":22,
+         "margin":0,
+         "name":"potion_health",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":16,
+         "tilewidth":16
+        }, 
+        {
+         "columns":1,
+         "firstgid":87,
+         "image":"dagger_on_ground.png",
          "imageheight":16,
          "imagewidth":16,
          "margin":0,
-         "name":"potion_health",
+         "name":"dagger_on_ground",
          "spacing":0,
          "tilecount":1,
          "tileheight":16,

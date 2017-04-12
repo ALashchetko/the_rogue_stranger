@@ -3,12 +3,16 @@ var map, layer, player, Background, cursors, jumpKey, actionKeys,
     coins,
     coinsCount = 0,
     checkpoints,
+    haveAdditionalWeapon = false,
+    additionalWeaponIcon,
     checkpointCoor = {
         x: 50,
         y: 50,
     },
     lifes, status = 'idle',
     gameOver, countOflifes = 3,
+    additionalWeapon,
+    daggers,
     enemy;
 const screenWidth = 640,
     screenHeight = 480;
@@ -21,6 +25,8 @@ var Game = {
         game.load.image('heart', 'assets/images/heart.png');
         game.load.image('potion_health', 'assets/images/potion_health.png');
         game.load.image('coin', 'assets/images/coin.png');
+        game.load.image('dagger_active', 'assets/images/dagger_active.png');
+        game.load.image('dagger_on_ground', 'assets/images/dagger_on_ground.png');
         game.load.image('coin_cunter', 'assets/images/coin_counter.png');
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
@@ -62,6 +68,12 @@ var Game = {
         enemy = game.add.group();
         createEnemy();
 
+
+
+        daggers = game.add.group();
+        daggers.enableBody = true;
+        map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
+
         coins = game.add.group();
         coins.enableBody = true;
         map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
@@ -101,16 +113,20 @@ var Game = {
             'block': Phaser.KeyCode.D,
             'death': Phaser.KeyCode.K,
             'jumpKey': Phaser.KeyCode.SPACEBAR,
-            'pause': Phaser.KeyCode.ESC
+            'pause': Phaser.KeyCode.ESC,
+            'additionalWeapon': Phaser.KeyCode.C
         })
         game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
         restart();
     },
     update: function() {
         game.physics.arcade.collide(player, layer);
+        game.physics.arcade.collide(additionalWeapon, layer, additionalWeaponCollision);
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
         game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
+        game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
+        game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -131,6 +147,9 @@ var Game = {
             if (player.animations.currentFrame.name === 'knight_block6') {
                 player.animations.paused = true;
             }
+        } else if (actionKeys.additionalWeapon.isDown && status === 'idle') {
+            throwAdditionalWeapon();
+            console.log('sdfdsa12');
         } else if (actionKeys.death.isDown || status === 'hit') {
             status = 'hit';
             player.animations.play('knight_hit');
@@ -142,7 +161,8 @@ var Game = {
         if (actionKeys.jumpKey.isDown && player.body.onFloor() && status === 'idle') {
             player.body.velocity.y = -200;
         }
-        if (actionKeys.pause.isDown){
+        if (actionKeys.pause.isDown) {
+            restart();
             game.state.start('Menu');
         }
     }
@@ -182,7 +202,7 @@ function getSlash() {
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false)))
-            enemy.removeChild(enemy.children[i]);
+            enemy.getChildAt(i).destroy();
     }
 }
 
@@ -264,6 +284,9 @@ function restart() {
     gameOver.visible = false;
     coinsCount = 0;
     coinsCounterText.setText(':' + coinsCount);
+    daggers.removeAll();
+    if (additionalWeaponIcon) additionalWeaponIcon.kill();
+    map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
     coins.removeAll();
     map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
     potionsHealth.removeAll();
@@ -280,13 +303,70 @@ function getDamageFromTile() {
 }
 
 function setCheckpointCoor(player, checkpoint) {
-    checkpoint.frame = 17;
-    checkpointCoor.x = player.x;
-    checkpointCoor.y = player.y;
+    if (checkpoint.frame === 16) {
+        checkpoint.frame = 17;
+        checkpointCoor.x = player.x;
+        checkpointCoor.y = player.y;
+    }
 }
 
 function getCoin(player, coin) {
     coinsCount++;
     coinsCounterText.setText(':' + coinsCount);
     coin.kill();
+}
+
+function getAdditionalWeapon(player, AW) {
+    if (haveAdditionalWeapon === false) {
+        let AWName;
+        switch (AW.key) {
+            case 'dagger_on_ground':
+                AWNameActive = 'dagger_active';
+                AWNamePassive = 'dagger_on_ground';
+                break;
+            default:
+                break;
+        }
+        AW.kill();
+        additionalWeaponIcon = game.add.sprite(15, game.world.height - 350, AWNamePassive);
+        additionalWeaponIcon.scale.setTo(1.5, 1.5);
+        additionalWeaponIcon.fixedToCamera = true;
+        additionalWeapon = game.add.sprite(0, 0, AWNameActive);
+        additionalWeapon.exists = false;
+        additionalWeapon.enableBody = true;
+        additionalWeapon.physicsBodyType = Phaser.Physics.ARCADE;
+        additionalWeapon.checkWorldBounds = true;
+        additionalWeapon.outOfBoundsKill = true;
+        game.physics.enable(additionalWeapon);
+        haveAdditionalWeapon = true;
+    }
+}
+
+function throwAdditionalWeapon() {
+    console.log('sdfdsa');
+    if (haveAdditionalWeapon === true) {
+        additionalWeapon.reset(player.x - 8, player.y - 8);
+        if (player.scale.x > 0) {
+            game.physics.arcade.moveToXY(additionalWeapon, player.x + 10, player.y - 8, 120);
+        } else {
+            additionalWeapon.scale.setTo(-1, 1);
+            game.physics.arcade.moveToXY(additionalWeapon, player.x - 10, player.y - 8, 120);
+        }
+        additionalWeaponIcon.kill();
+        setTimeout(function() {
+            additionalWeapon.body.velocity.x = 0;
+            additionalWeapon.kill();
+            console.log(additionalWeapon);
+        }, 2000);
+        haveAdditionalWeapon = false;
+    }
+}
+
+function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
+    enemy.destroy();
+    additionalWeapon.kill();
+}
+
+function additionalWeaponCollision() {
+    additionalWeapon.kill();
 }
