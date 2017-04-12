@@ -1,8 +1,9 @@
 const skeleton_scale = 0.7;
+
 Skeleton = function(game, x, y, direction, speed) {
     Phaser.Sprite.call(this, game, x, y, "skeleton");
     this.animations.add('skeleton_walk', Phaser.Animation.generateFrameNames('skeleton_walk', 0, 5), 8, true);
-    this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 5, true);
+    this.animations.add('skeleton_throw', Phaser.Animation.generateFrameNames('skeleton_throw', 0, 5), 4, true);
     this.scale.setTo(skeleton_scale, skeleton_scale);
     this.anchor.setTo(0.5);
     game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -30,11 +31,11 @@ function moveSkeleton(Skeleton) {
 
 function atack(Skeleton) {
     if ((player.y > Skeleton.y - 30 && player.y < Skeleton.y + 30 && player.x + 200 > Skeleton.x && player.x - 200 < Skeleton.x && ((Skeleton.scale.x < 0 && player.x < Skeleton.x) || (Skeleton.scale.x > 0 && player.x > Skeleton.x))) || Skeleton.skeleton_status === 'atack') {
-        Skeleton.skeleton_status = 'atack';
         Skeleton.animations.play('skeleton_throw');
+        Skeleton.skeleton_status = 'atack';
         Skeleton.body.velocity.x = 0;
         if (Skeleton.animations.currentFrame.name === 'skeleton_throw3' && Skeleton.bone_status != 'throw') {
-            let bone
+            let bone;
             if (Skeleton.scale.x < 0) bone = new Bone(game, Skeleton.x - 20, Skeleton.y, Skeleton.scale.x, 120);
             else bone = new Bone(game, Skeleton.x + 20, Skeleton.y, Skeleton.scale.x, 120);
             game.add.existing(bone);
@@ -61,6 +62,7 @@ Bone.prototype = Object.create(Phaser.Sprite.prototype);
 Bone.prototype.constructor = Bone;
 Bone.prototype.update = function() {
     game.physics.arcade.collide(this, layer, () => this.kill());
+    game.physics.arcade.collide(this, causticLayer, () => this.kill());
     game.physics.arcade.overlap(this, player, () => {
         this.destroy();
         if (player.animations.currentFrame.name != 'knight_block6') status = 'hit';

@@ -21,8 +21,8 @@ const Settings = {
         const controls = game.add.text(320, 80, "CONTROLS", style);
         controls.setShadow(1, 1, 'rgba(0,0,0,0.5)', 2);
         controls.anchor.setTo(0.5, 0.5);
-        controller('a_button', 'Atack', 95, 180);
-        controller('d_button', 'Shield', 190, 180);
+        controller('a_button', 'Atack\n(hold)', 95, 180);
+        controller('d_button', 'Shield\n(hold)', 190, 180);
         controller('k_button', 'Suicide', 300, 180);
         controller('esc_button', 'Menu', 390, 180);
         controller('c_button', 'Additional \n\t\tWeapon', 510, 180);

@@ -35,6 +35,7 @@ var Game = {
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
         game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
+        game.load.atlas('flag', 'assets/images/flag/flag_atlas.png', 'assets/images/flag/flag_atlas.json');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -47,12 +48,16 @@ var Game = {
         map.setCollisionBetween(1, 12);
         map.setCollisionBetween(13, 16);
         map.setCollisionBetween(19, 22);
-        //map.setTileIndexCallback([31, 32, 33], getDamageFromTile, game);
         map.setTileIndexCallback(18, setCheckpointCoor, game);
         layer = map.createLayer('Tile Layer 1');
         causticLayer = map.createLayer('CausticTileLayer');
         map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
+
+        flag = new Flag(game, 40, 444.5);
+        flag.enableBody = true;
+        game.add.existing(flag);
+
         player = game.add.sprite(32, game.world.height - 150, 'knight');
         player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
         player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
@@ -73,12 +78,14 @@ var Game = {
         daggers = game.add.group();
         daggers.enableBody = true;
         map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
-        daggers.scale.setTo(0.8, 0.8);
 
         coins = game.add.group();
         coins.enableBody = true;
         map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
-        coinsCounterText = game.add.text(45, 40, ':0', { font: "20px Press Start 2P", fill: "#190707" });
+        coinsCounterText = game.add.text(45, 40, ':0', {
+            font: "20px Press Start 2P",
+            fill: "#190707"
+        });
         coinsCounterText.fixedToCamera = true;
         coinsCounterImage = game.add.sprite(20, 35, 'coin_cunter');
         coinsCounterImage.scale.setTo(0.1, 0.1);
@@ -91,6 +98,7 @@ var Game = {
         checkpoints = game.add.group();
         checkpoints.enableBody = true;
         map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
+
 
         lifes = game.add.group();
         initLife(countOflifes);
@@ -267,7 +275,10 @@ function createEnemy() {
     skeleton = new Skeleton(game, 550, 304, -1, 50);
     game.add.existing(skeleton);
     enemy.add(skeleton);
-    slime = new Slime(game, 70, 70, 1, 50);
+    slime = new Slime(game, 254, 76.5, 1, 50, 50);
+    game.add.existing(slime);
+    enemy.add(slime);
+    slime = new Slime(game, 852, 444.5, 1, 50, 50);
     game.add.existing(slime);
     enemy.add(slime);
 }
@@ -281,6 +292,7 @@ function restart() {
     player.revive();
     player.x = start.x;
     player.y = start.y;
+    player.scale.setTo(1, 1);
     gameOver.visible = false;
     coinsCount = 0;
     coinsCounterText.setText(':' + coinsCount);
@@ -330,7 +342,7 @@ function getAdditionalWeapon(player, AW) {
                 break;
         }
         AW.kill();
-        additionalWeaponIcon = game.add.sprite(15, game.world.height - 350, AWNamePassive);
+        additionalWeaponIcon = game.add.sprite(15, screenHeight - 50, AWNamePassive);
         additionalWeaponIcon.scale.setTo(1.5, 1.5);
         additionalWeaponIcon.fixedToCamera = true;
         additionalWeapon = game.add.sprite(0, 0, AWNameActive);
@@ -356,10 +368,6 @@ function throwAdditionalWeapon() {
             game.physics.arcade.moveToXY(additionalWeapon, player.x - 10, player.y - 8, 200);
         }
         additionalWeaponIcon.kill();
-        setTimeout(function() {
-            additionalWeapon.body.velocity.x = 0;
-            additionalWeapon.kill();
-        }, 2000);
     }
 }
 

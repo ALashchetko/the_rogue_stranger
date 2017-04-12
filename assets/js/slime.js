@@ -1,5 +1,5 @@
 const slime_scale = 0.5;
-Slime = function(game, x, y, direction, speed) {
+Slime = function(game, x, y, direction, speed, range) {
     Phaser.Sprite.call(this, game, x, y, "slime");
     this.animations.add('slime_jump', Phaser.Animation.generateFrameNames('slime_jump', 0, 8), 12, true);
     this.animations.add('slime_idle', Phaser.Animation.generateFrameNames('slime_idle', 0, 5), 5, true);
@@ -11,6 +11,7 @@ Slime = function(game, x, y, direction, speed) {
     this.xSpeed = direction * speed;
     this.startX = x;
     this.appear = 0;
+    this.range = range;
 };
 
 Slime.prototype = Object.create(Phaser.Sprite.prototype);
@@ -31,7 +32,7 @@ Slime.prototype.update = function() {
 };
 
 function moveSlime(slime) {
-    if ((slime.body.onFloor() && slime.xSpeed > 0 && slime.x > (slime.startX + 100)) || (slime.body.onFloor() && slime.xSpeed < 0 && slime.x < slime.startX))
+    if ((slime.body.onFloor() && slime.xSpeed > 0 && slime.x > (slime.startX + slime.range)) || (slime.body.onFloor() && slime.xSpeed < 0 && slime.x < slime.startX))
         slime.xSpeed *= -1;
     if (slime.xSpeed > 0) slime.scale.setTo(-slime_scale, slime_scale);
     else if (slime.xSpeed < 0) slime.scale.setTo(slime_scale, slime_scale);
