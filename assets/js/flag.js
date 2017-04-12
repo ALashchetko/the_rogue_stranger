@@ -26,6 +26,7 @@ function endOfLevel() {
     game.paused = true;
     rectangle = game.add.sprite(320, 240, 'rectangle');
     rectangle.anchor.setTo(0.5, 0.5);
+    coinLeftSound = game.add.audio('coin_left_sound');
 
     heart_text_tmp = game.add.text(240, 197, "+1\t\t\t\t50", style_tmp);
     heart_text_tmp.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);

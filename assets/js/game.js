@@ -16,7 +16,12 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     slashOnTargetSound,
     slashWithoutTarget,
     walkOnGrassSound,
-    gameOverSound;
+    gameOverSound,
+    coinPickupSound,
+    drinkPotionSound,
+    shieldSound,
+    daggerThrowSound,
+    daggerPickUpSound;
 const screenWidth = 640,
     screenHeight = 480,
     start = {
@@ -40,13 +45,18 @@ var Game = {
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
         game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
         game.load.atlas('flag', 'assets/images/flag/flag_atlas.png', 'assets/images/flag/flag_atlas.json');
-        game.load.audio('get_damage_sound', 'assets/sounds/get_damage_sound.mp3');
+        game.load.audio('get_damage_sound', 'assets/sounds/get_damage.wav');
         game.load.audio('slime_kill_sound', 'assets/sounds/slime_kill.mp3');
         game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
         game.load.audio('slash_on_target_sound', 'assets/sounds/slash_on_target_2.mp3');
         game.load.audio('slash_without_target_sound', 'assets/sounds/slash_without_target.mp3');
         game.load.audio('walk_on_grass_sound', 'assets/sounds/walk_on_grass.mp3');
         game.load.audio('game_over_sound', 'assets/sounds/game_over.mp3');
+        game.load.audio('coin_pick_up_sound', 'assets/sounds/coin_pick_up.wav');
+        game.load.audio('drink_potion_sound', 'assets/sounds/drink_potion.wav');
+        game.load.audio('shield_sound', 'assets/sounds/shield.wav');
+        game.load.audio('dagger_throw_sound', 'assets/sounds/dagger_throw.wav');
+        game.load.audio('dagger_pick_up_sound', 'assets/sounds/dagger_pick_up.wav');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -90,6 +100,12 @@ var Game = {
         slashWithoutTargetSound = game.add.audio('slash_without_target_sound');
         walkOnGrassSound = game.add.audio('walk_on_grass_sound');
         gameOverSound = game.add.audio('game_over_sound');
+        coinPickupSound = game.add.audio('coin_pick_up_sound');
+        drinkPotionSound = game.add.audio('drink_potion_sound');
+        shieldSound = game.add.audio('shield_sound');
+        daggerThrowSound = game.add.audio('dagger_throw_sound');
+        daggerPickUpSound = game.add.audio('dagger_pick_up_sound');
+
 
         enemy = game.add.group();
         createEnemy();
@@ -211,6 +227,7 @@ function addLife(player, potionHealth) {
     var lifesCount = lifes.countLiving()
     if (lifesCount < countOflifes && lifesCount !== 0) {
         var life = lifes.getChildAt(lifesCount);
+        drinkPotionSound.play();
         life.revive();
     }
     potionHealth.kill();
@@ -257,6 +274,7 @@ function getDamageFromTouch() {
     for (let i = 0; i < enemy.countLiving(); i++) {
         if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
             if (player.animations.currentFrame.name != 'knight_block6') status = 'hit';
+            else shieldSound.play();
             if (player.scale.x > 0) enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
             else enemy.children[i].scale.x < 0 ? player.body.velocity.x = hitSpeed : player.body.velocity.x = hitSpeed * 2.5;
         }
@@ -360,6 +378,7 @@ function setCheckpointCoor(player, checkpoint) {
 function getCoin(player, coin) {
     coinsCount++;
     coinsCounterText.setText(':' + coinsCount);
+    coinPickupSound.play();
     coin.kill();
 }
 
@@ -376,6 +395,7 @@ function getAdditionalWeapon(player, AW) {
                 break;
         }
         AW.kill();
+        daggerPickUpSound.play();
         additionalWeaponIcon = game.add.sprite(15, screenHeight - 50, AWNamePassive);
         additionalWeaponIcon.scale.setTo(1.5, 1.5);
         additionalWeaponIcon.fixedToCamera = true;
@@ -391,6 +411,7 @@ function getAdditionalWeapon(player, AW) {
 
 function throwAdditionalWeapon() {
     if (haveAdditionalWeapon === true) {
+        daggerThrowSound.play();
         haveAdditionalWeapon = false;
         additionalWeapon.reset(player.x - 8, player.y - 8);
         additionalWeapon.scale.setTo(0.5, 0.5);
@@ -410,8 +431,8 @@ function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
 }
 
 function walkSound() {
-    if (cursors.left.isDown || cursors.right.isDown) {
-        if (!walkOnGrassSound.isPlaying)
-            walkOnGrassSound.play();
-    }
+    // if (cursors.left.isDown || cursors.right.isDown) {
+    //     if (!walkOnGrassSound.isPlaying)
+    //         walkOnGrassSound.play();
+    // }
 }

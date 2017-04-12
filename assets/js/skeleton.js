@@ -67,6 +67,7 @@ Bone.prototype.update = function() {
     game.physics.arcade.overlap(this, player, () => {
         this.destroy();
         if (player.animations.currentFrame.name != 'knight_block6') status = 'hit';
+        else shieldSound.play();
     }, null, this);
     if (this.alive) {
         this.body.velocity.x = this.xSpeed;
