@@ -1,11 +1,22 @@
 var map, layer, causticLayer, player, Background, cursors, actionKeys,
-    coinsCounterText, coins, coinsCount = 0, checkpoints, haveAdditionalWeapon = false,
-    additionalWeaponIcon, add_weapon = false, lifes, status = 'idle', gameOver,
-    countOflifes = 3, additionalWeapon, daggers, enemy, bone,
+    coinsCounterText, coins, coinsCount = 0,
+    checkpoints, haveAdditionalWeapon = false,
+    additionalWeaponIcon, add_weapon = false,
+    lifes, status = 'idle',
+    gameOver,
+    countOflifes = 3,
+    additionalWeapon, daggers, enemy, bone,
     checkpointCoor = {
         x: 50,
         y: 50,
-    };
+    },
+    getDamageSound,
+    slimeKillSound,
+    skeletonKillSound,
+    slashOnTargetSound,
+    slashWithoutTarget,
+    walkOnGrassSound,
+    gameOverSound;
 const screenWidth = 640,
     screenHeight = 480,
     start = {
@@ -29,6 +40,13 @@ var Game = {
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
         game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
         game.load.atlas('flag', 'assets/images/flag/flag_atlas.png', 'assets/images/flag/flag_atlas.json');
+        game.load.audio('get_damage_sound', 'assets/sounds/get_damage_sound.mp3');
+        game.load.audio('slime_kill_sound', 'assets/sounds/slime_kill.mp3');
+        game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
+        game.load.audio('slash_on_target_sound', 'assets/sounds/slash_on_target_2.mp3');
+        game.load.audio('slash_without_target_sound', 'assets/sounds/slash_without_target.mp3');
+        game.load.audio('walk_on_grass_sound', 'assets/sounds/walk_on_grass.mp3');
+        game.load.audio('game_over_sound', 'assets/sounds/game_over.mp3');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -64,6 +82,14 @@ var Game = {
         player.anchor.setTo(0.5, 0.5);
         player.x = 50;
         player.y = 50;
+
+        getDamageSound = game.add.audio('get_damage_sound');
+        slimeKillSound = game.add.audio('slime_kill_sound');
+        skeletonKillSound = game.add.audio('skeleton_kill_sound');
+        slashOnTargetSound = game.add.audio('slash_on_target_sound');
+        slashWithoutTargetSound = game.add.audio('slash_without_target_sound');
+        walkOnGrassSound = game.add.audio('walk_on_grass_sound');
+        gameOverSound = game.add.audio('game_over_sound');
 
         enemy = game.add.group();
         createEnemy();
@@ -124,7 +150,7 @@ var Game = {
     },
     update: function() {
         game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
-        game.physics.arcade.collide(player, layer);
+        game.physics.arcade.collide(player, layer, walkSound);
         game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
@@ -191,6 +217,7 @@ function addLife(player, potionHealth) {
 }
 
 function getSlash() {
+    slashWithoutTargetSound.play();
     const x_range = 40,
         y_range = 15;
     const hit = (i, scale) => {
@@ -205,8 +232,10 @@ function getSlash() {
             player.world.y - (y_range + 5) < enemy.children[i].world.y;
     };
     for (let i = 0; i < enemy.countLiving(); i++) {
-        if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false)))
+        if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false))) {
+            slashOnTargetSound.play();
             enemy.getChildAt(i).destroy();
+        }
     }
 }
 
@@ -239,6 +268,8 @@ function death() {
         status = 'death';
         player.animations.play('knight_death');
         if (player.animations.currentFrame.name === 'knight_death8') {
+            if (!gameOverSound.isPlaying)
+                gameOverSound.play();
             player.kill();
             gameOver.visible = true;
             game.input.onTap.addOnce(restart, this);
@@ -247,6 +278,7 @@ function death() {
 }
 
 function getDamage() {
+    getDamageSound.play();
     let life = lifes.getChildAt(lifes.countLiving() - 1);
     if (!lifes.countLiving()) death();
     else {
@@ -375,4 +407,11 @@ function throwAdditionalWeapon() {
 function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
     enemy.destroy();
     additionalWeapon.kill();
+}
+
+function walkSound() {
+    if (cursors.left.isDown || cursors.right.isDown) {
+        if (!walkOnGrassSound.isPlaying)
+            walkOnGrassSound.play();
+    }
 }

@@ -12,6 +12,7 @@ Slime = function(game, x, y, direction, speed, range) {
     this.startX = x;
     this.appear = 0;
     this.range = range;
+    this.events.onDestroy.add(() => slimeKillSound.play());
 };
 
 Slime.prototype = Object.create(Phaser.Sprite.prototype);

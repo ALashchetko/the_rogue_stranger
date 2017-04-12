@@ -12,6 +12,7 @@ Skeleton = function(game, x, y, direction, speed) {
     this.body.gravity.y = 250;
     this.skeleton_status = 'idle';
     this.bone_status = 'wait';
+    this.events.onDestroy.add(() => skeletonKillSound.play());
 };
 Skeleton.prototype = Object.create(Phaser.Sprite.prototype);
 Skeleton.prototype.constructor = Skeleton;
