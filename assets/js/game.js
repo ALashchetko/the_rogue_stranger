@@ -21,7 +21,8 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     drinkPotionSound,
     shieldSound,
     daggerThrowSound,
-    daggerPickUpSound;
+    daggerPickUpSound,
+    checkpointSound;
 const screenWidth = 640,
     screenHeight = 480,
     start = {
@@ -57,6 +58,7 @@ var Game = {
         game.load.audio('shield_sound', 'assets/sounds/shield.wav');
         game.load.audio('dagger_throw_sound', 'assets/sounds/dagger_throw.wav');
         game.load.audio('dagger_pick_up_sound', 'assets/sounds/dagger_pick_up.wav');
+        game.load.audio('checkpoint_sound', 'assets/sounds/checkpoint.wav');
     },
     create: function() {
         Background = game.add.graphics(0, 0);
@@ -105,6 +107,7 @@ var Game = {
         shieldSound = game.add.audio('shield_sound');
         daggerThrowSound = game.add.audio('dagger_throw_sound');
         daggerPickUpSound = game.add.audio('dagger_pick_up_sound');
+        checkpointSound = game.add.audio('checkpoint_sound');
 
 
         enemy = game.add.group();
@@ -369,6 +372,7 @@ function getDamageFromTile() {
 
 function setCheckpointCoor(player, checkpoint) {
     if (checkpoint.frame === 16) {
+        checkpointSound.play();
         checkpoint.frame = 17;
         checkpointCoor.x = player.x;
         checkpointCoor.y = player.y;
