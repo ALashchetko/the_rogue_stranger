@@ -41,9 +41,13 @@ function jump(slime) {
     if (slime.body.onFloor()) {
         slime.body.velocity.x = 0;
         slime.slime_status = 'jump';
-        setTimeout(() => slime.body.velocity = {
-            x: slime.xSpeed,
-            y: -100
+        setTimeout(() => {
+            if (slime.alive) {
+                slime.body.velocity = {
+                    x: slime.xSpeed,
+                    y: -100
+                }
+            }
         }, 500);
     }
 }

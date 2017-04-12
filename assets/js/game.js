@@ -73,6 +73,7 @@ var Game = {
         daggers = game.add.group();
         daggers.enableBody = true;
         map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
+        daggers.scale.setTo(0.8, 0.8);
 
         coins = game.add.group();
         coins.enableBody = true;
@@ -125,8 +126,8 @@ var Game = {
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
         game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
-        game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
         game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
+        game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -149,7 +150,6 @@ var Game = {
             }
         } else if (actionKeys.additionalWeapon.isDown && status === 'idle') {
             throwAdditionalWeapon();
-            console.log('sdfdsa12');
         } else if (actionKeys.death.isDown || status === 'hit') {
             status = 'hit';
             player.animations.play('knight_hit');
@@ -286,6 +286,7 @@ function restart() {
     coinsCounterText.setText(':' + coinsCount);
     daggers.removeAll();
     if (additionalWeaponIcon) additionalWeaponIcon.kill();
+    haveAdditionalWeapon = false
     map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
     coins.removeAll();
     map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
@@ -318,7 +319,8 @@ function getCoin(player, coin) {
 
 function getAdditionalWeapon(player, AW) {
     if (haveAdditionalWeapon === false) {
-        let AWName;
+        let AWNameActive;
+        let AWNamePassive;
         switch (AW.key) {
             case 'dagger_on_ground':
                 AWNameActive = 'dagger_active';
@@ -343,22 +345,21 @@ function getAdditionalWeapon(player, AW) {
 }
 
 function throwAdditionalWeapon() {
-    console.log('sdfdsa');
     if (haveAdditionalWeapon === true) {
+        haveAdditionalWeapon = false;
         additionalWeapon.reset(player.x - 8, player.y - 8);
+        additionalWeapon.scale.setTo(0.5, 0.5);
         if (player.scale.x > 0) {
-            game.physics.arcade.moveToXY(additionalWeapon, player.x + 10, player.y - 8, 120);
+            game.physics.arcade.moveToXY(additionalWeapon, player.x + 10, player.y - 8, 200);
         } else {
-            additionalWeapon.scale.setTo(-1, 1);
-            game.physics.arcade.moveToXY(additionalWeapon, player.x - 10, player.y - 8, 120);
+            additionalWeapon.scale.setTo(-0.5, 0.5);
+            game.physics.arcade.moveToXY(additionalWeapon, player.x - 10, player.y - 8, 200);
         }
         additionalWeaponIcon.kill();
         setTimeout(function() {
             additionalWeapon.body.velocity.x = 0;
             additionalWeapon.kill();
-            console.log(additionalWeapon);
         }, 2000);
-        haveAdditionalWeapon = false;
     }
 }
 
