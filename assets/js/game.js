@@ -1,4 +1,4 @@
-var map, layer, player, Background, cursors, jumpKey, actionKeys,
+var map, layer, causticLayer, player, Background, cursors, jumpKey, actionKeys,
     coinsCounterText,
     coins,
     coinsCount = 0,
@@ -47,9 +47,11 @@ var Game = {
         map.setCollisionBetween(1, 12);
         map.setCollisionBetween(13, 16);
         map.setCollisionBetween(19, 22);
-        map.setTileIndexCallback([31, 32, 33], getDamageFromTile, game);
+        //map.setTileIndexCallback([31, 32, 33], getDamageFromTile, game);
         map.setTileIndexCallback(18, setCheckpointCoor, game);
         layer = map.createLayer('Tile Layer 1');
+        causticLayer = map.createLayer('CausticTileLayer');
+        map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
         player = game.add.sprite(32, game.world.height - 150, 'knight');
         player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
@@ -119,6 +121,7 @@ var Game = {
         restart();
     },
     update: function() {
+        game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
         game.physics.arcade.collide(player, layer);
         game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
