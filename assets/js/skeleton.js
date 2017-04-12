@@ -69,7 +69,7 @@ Bone.prototype.update = function() {
     }, null, this);
     if (this.alive) {
         this.body.velocity.x = this.xSpeed;
-        if (this.body.velocity.x > 0 && this.x > this.startX + 150 || this.body.velocity.x < 0 && this.x < this.startX - 150)
+        if (this.body.velocity.x > 0 && this.x > this.startX + 250 || this.body.velocity.x < 0 && this.x < this.startX - 250)
             this.destroy();
     }
     if (status === 'death') this.destroy();

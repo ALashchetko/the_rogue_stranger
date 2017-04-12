@@ -1,26 +1,17 @@
-var map, layer, causticLayer, player, Background, cursors, jumpKey, actionKeys,
-    coinsCounterText,
-    coins,
-    coinsCount = 0,
-    checkpoints,
-    haveAdditionalWeapon = false,
-    additionalWeaponIcon,
+var map, layer, causticLayer, player, Background, cursors, actionKeys,
+    coinsCounterText, coins, coinsCount = 0, checkpoints, haveAdditionalWeapon = false,
+    additionalWeaponIcon, add_weapon = false, lifes, status = 'idle', gameOver,
+    countOflifes = 3, additionalWeapon, daggers, enemy, bone,
     checkpointCoor = {
         x: 50,
         y: 50,
-    },
-    lifes, status = 'idle',
-    gameOver, countOflifes = 3,
-    additionalWeapon,
-    daggers,
-    enemy,
-    bone;
+    };
 const screenWidth = 640,
-    screenHeight = 480;
-let start = {
-    x: 50,
-    y: 50
-};
+    screenHeight = 480,
+    start = {
+        x: 50,
+        y: 50
+    };
 var Game = {
     preload: function() {
         game.load.image('heart', 'assets/images/heart.png');
@@ -28,8 +19,10 @@ var Game = {
         game.load.image('coin', 'assets/images/coin.png');
         game.load.image('dagger_active', 'assets/images/dagger_active.png');
         game.load.image('dagger_on_ground', 'assets/images/dagger_on_ground.png');
-        game.load.image('coin_cunter', 'assets/images/coin_counter.png');
+        game.load.image('coin_counter', 'assets/images/coin_counter.png');
         game.load.image('skeleton_bone', 'assets/images/skeleton/skeleton_bone.png');
+        game.load.image('rectangle', 'assets/images/rectangle.jpg');
+        game.load.image('check_mark', 'assets/images/flag/check_mark.png');
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
         game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
@@ -87,7 +80,7 @@ var Game = {
             fill: "#190707"
         });
         coinsCounterText.fixedToCamera = true;
-        coinsCounterImage = game.add.sprite(20, 35, 'coin_cunter');
+        coinsCounterImage = game.add.sprite(20, 35, 'coin_counter');
         coinsCounterImage.scale.setTo(0.1, 0.1);
         coinsCounterImage.fixedToCamera = true;
 
@@ -110,6 +103,7 @@ var Game = {
             boundsAlignH: "center",
             boundsAlignV: "middle"
         };
+
         gameOver = game.add.text(0, 0, "\t\t\tGame over! \nClick to restart", style);
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
@@ -170,6 +164,8 @@ var Game = {
             player.body.velocity.y = -200;
         }
         if (actionKeys.pause.isDown) {
+            countOflifes = 3;
+            status = 'death';
             restart();
             game.state.start('Menu');
         }
@@ -284,22 +280,24 @@ function createEnemy() {
 }
 
 function restart() {
-    status = 'idle';
     lifes.removeAll();
     initLife(countOflifes);
     enemy.removeAll();
     createEnemy();
-    player.revive();
+    gameOver.visible = false;
+    if (status === 'death') {
+        coinsCount = 0;
+        player.revive();
+    }
     player.x = start.x;
     player.y = start.y;
     player.scale.setTo(1, 1);
-    gameOver.visible = false;
-    coinsCount = 0;
-    coinsCounterText.setText(':' + coinsCount);
+    status = 'idle';
     daggers.removeAll();
     if (additionalWeaponIcon) additionalWeaponIcon.kill();
     haveAdditionalWeapon = false
     map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
+    coinsCounterText.setText(':' + coinsCount);
     coins.removeAll();
     map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
     potionsHealth.removeAll();
@@ -307,6 +305,10 @@ function restart() {
     checkpointCoor.x = start.x;
     checkpointCoor.y = start.y;
     checkpoints.children.map(checkpoint => checkpoint.frame = 16);
+    if (add_weapon) {
+        getAdditionalWeapon(player, game.add.sprite(0, 0, 'dagger_on_ground'));
+        add_weapon = false;
+    }
 }
 
 function getDamageFromTile() {
@@ -348,7 +350,6 @@ function getAdditionalWeapon(player, AW) {
         additionalWeapon = game.add.sprite(0, 0, AWNameActive);
         additionalWeapon.exists = false;
         additionalWeapon.enableBody = true;
-        additionalWeapon.physicsBodyType = Phaser.Physics.ARCADE;
         additionalWeapon.checkWorldBounds = true;
         additionalWeapon.outOfBoundsKill = true;
         game.physics.enable(additionalWeapon);
