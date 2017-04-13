@@ -98,10 +98,8 @@ let Game = {
         checkpointSound = game.add.audio('checkpoint_sound');
         gameMusic = game.add.audio('game_music');
         gameMusic.loop = true;
-        gameMusic.play();
 
         enemy = game.add.group();
-        //createEnemy();
 
         daggers = game.add.group();
         daggers.enableBody = true;
@@ -285,6 +283,7 @@ function getDamageFromTouch() {
 
 function death() {
     if (!lifes.countLiving()) {
+        gameMusic.stop();
         status = 'death';
         player.animations.play('knight_death');
         if (player.animations.currentFrame.name === 'knight_death8') {
@@ -356,10 +355,11 @@ function createEnemy() {
 }
 
 function restart() {
+    gameMusic.play();
     lifes.removeAll();
     initLife(countOflifes);
     enemy.removeAll();
-    //createEnemy();
+    createEnemy();
     gameOver.visible = false;
     if (status === 'death') {
         coinsCount = 0;
