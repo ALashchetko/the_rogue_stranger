@@ -1,14 +1,4 @@
 const Settings = {
-    preload: function() {
-        game.load.image('back', 'assets/images/back.png');
-        game.load.image('a_button', 'assets/images/Settings/a_button.png');
-        game.load.image('d_button', 'assets/images/Settings/d_button.png');
-        game.load.image('k_button', 'assets/images/Settings/k_button.png');
-        game.load.image('esc_button', 'assets/images/Settings/esc_button.png');
-        game.load.image('c_button', 'assets/images/Settings/c_button.png');
-        game.load.image('arrows', 'assets/images/Settings/arrows.png');
-        game.load.image('space', 'assets/images/Settings/space.png');
-    },
     create: function() {
         const background = game.add.sprite(0, 0, 'back1')
         background.scale.setTo(1.2, 1.2);

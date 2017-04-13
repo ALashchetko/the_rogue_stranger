@@ -5,7 +5,7 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     lifes, status = 'idle',
     gameOver,
     countOflifes = 3,
-    additionalWeapon, daggers, enemy, bone,
+    additionalWeapon, daggers, enemy, bone, flag,
     checkpointCoor = {
         x: 50,
         y: 50,
@@ -37,38 +37,6 @@ const style = {
 const countOfLevels = 2;
 let current_level = 1;
 let Game = {
-    preload: function() {
-        game.load.image('heart', 'assets/images/heart.png');
-        game.load.image('potion_health', 'assets/images/potion_health.png');
-        game.load.image('coin', 'assets/images/coin.png');
-        game.load.image('dagger_active', 'assets/images/dagger_active.png');
-        game.load.image('dagger_on_ground', 'assets/images/dagger_on_ground.png');
-        game.load.image('coin_counter', 'assets/images/coin_counter.png');
-        game.load.image('skeleton_bone', 'assets/images/skeleton/skeleton_bone.png');
-        game.load.image('rectangle', 'assets/images/rectangle.jpg');
-        game.load.image('check_mark', 'assets/images/flag/check_mark.png');
-        game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
-        game.load.tilemap('level1', 'assets/images/level1.json', null, Phaser.Tilemap.TILED_JSON);
-
-        game.load.tilemap('level2', 'assets/images/level2.json', null, Phaser.Tilemap.TILED_JSON);
-
-        game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
-        game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
-        game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
-        game.load.atlas('flag', 'assets/images/flag/flag_atlas.png', 'assets/images/flag/flag_atlas.json');
-        game.load.audio('get_damage_sound', 'assets/sounds/get_damage.wav');
-        game.load.audio('slime_kill_sound', 'assets/sounds/slime_kill.mp3');
-        game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
-        game.load.audio('slash_on_target_sound', 'assets/sounds/slash_on_target_2.mp3');
-        game.load.audio('slash_without_target_sound', 'assets/sounds/slash_without_target.mp3');
-        game.load.audio('game_over_sound', 'assets/sounds/game_over.mp3');
-        game.load.audio('coin_pick_up_sound', 'assets/sounds/coin_pick_up.wav');
-        game.load.audio('drink_potion_sound', 'assets/sounds/drink_potion.wav');
-        game.load.audio('shield_sound', 'assets/sounds/shield.wav');
-        game.load.audio('dagger_throw_sound', 'assets/sounds/dagger_throw.wav');
-        game.load.audio('dagger_pick_up_sound', 'assets/sounds/dagger_pick_up.wav');
-        game.load.audio('checkpoint_sound', 'assets/sounds/checkpoint.wav');
-    },
     create: function() {
         Background = game.add.graphics(0, 0);
         Background.beginFill(0x53BECE, 1);
@@ -167,6 +135,7 @@ let Game = {
         restart();
     },
     update: function() {
+        console.log('here');
         game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
         game.physics.arcade.collide(player, layer);
         game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
