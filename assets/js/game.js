@@ -23,7 +23,8 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     shieldSound,
     daggerThrowSound,
     daggerPickUpSound,
-    checkpointSound;
+    checkpointSound,
+    gameMusic;
 const screenWidth = 640,
     screenHeight = 480;
 const start = {
@@ -93,6 +94,9 @@ let Game = {
         daggerThrowSound = game.add.audio('dagger_throw_sound');
         daggerPickUpSound = game.add.audio('dagger_pick_up_sound');
         checkpointSound = game.add.audio('checkpoint_sound');
+        gameMusic = game.add.audio('game_music');
+        gameMusic.loop = true;
+        gameMusic.play();
 
         enemy = game.add.group();
         //createEnemy();
@@ -204,6 +208,7 @@ let Game = {
             create_level('level1');
             restart();
             game.state.start('Menu');
+            gameMusic.stop();
         }
     }
 };

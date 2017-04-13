@@ -1,4 +1,5 @@
 let load_complete = false;
+let menuMusic;
 const Menu = {
     create: function() {
         const background = game.add.sprite(0, 0, 'back1')
@@ -20,8 +21,11 @@ const Menu = {
         settings.anchor.setTo(0.5, 0.5);
         startButton.scale.setTo(0.2, 0.2);
         settings.scale.setTo(0.2, 0.2);
+        menuMusic = game.add.audio('menu_music');
+        menuMusic.loop = true;
+        menuMusic.play();
 
-        if (!load_complete){
+        if (!load_complete) {
             game.load.onLoadStart.add(loadMenuStart, this);
             game.load.onFileComplete.add(fileMenuComplete, this);
             game.load.onLoadComplete.add(loadMenuComplete, this);
@@ -30,9 +34,11 @@ const Menu = {
     },
     startGame: function() {
         this.state.start('Game');
+        menuMusic.stop();
     },
     settings: function() {
         this.state.start('Settings');
+        menuMusic.stop();
     }
 };
 
@@ -80,6 +86,8 @@ function menuLoad() {
     game.load.audio('dagger_throw_sound', 'assets/sounds/dagger_throw.wav');
     game.load.audio('dagger_pick_up_sound', 'assets/sounds/dagger_pick_up.wav');
     game.load.audio('checkpoint_sound', 'assets/sounds/checkpoint.wav');
+    game.load.audio('game_music', 'assets/sounds/music/game.ogg');
+    game.load.audio('menu_music', 'assets/sounds/music/menu.ogg');
     game.load.start();
 }
 
