@@ -308,25 +308,31 @@ function getDamage() {
 
 function createEnemy() {
     if (current_level === 1) {
-        skeleton = new Skeleton(game, 75, 124, 1, 50);
+        skeleton = new Skeleton(game, 255, 290, 1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
-        skeleton = new Skeleton(game, 480, 124, -1, 50);
+        skeleton = new Skeleton(game, 1015, 250, 1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
-        skeleton = new Skeleton(game, 100, 304, 1, 50);
+        skeleton = new Skeleton(game, 1250, 250, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
-        skeleton = new Skeleton(game, 460, 304, -1, 50);
+        skeleton = new Skeleton(game, 1950, 290, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
-        skeleton = new Skeleton(game, 550, 304, -1, 50);
+        skeleton = new Skeleton(game, 2960, 290, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
         slime = new Slime(game, 254, 76.5, 1, 50, 50);
         game.add.existing(slime);
         enemy.add(slime);
-        slime = new Slime(game, 852, 444.5, 1, 50, 50);
+        slime = new Slime(game, 855, 290, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 1540, 420, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 1600, 420, -1, 50, 50);
         game.add.existing(slime);
         enemy.add(slime);
     } else if (current_level === 2) {
