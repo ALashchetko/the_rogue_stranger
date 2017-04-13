@@ -3,6 +3,8 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     checkpoints, haveAdditionalWeapon = false,
     additionalWeaponIcon, add_weapon = false,
     lifes, status = 'idle',
+    ladders,
+    water,
     gameOver,
     countOflifes = 3,
     additionalWeapon, daggers, enemy, bone, flag,
@@ -40,23 +42,30 @@ let Game = {
     create: function() {
         Background = game.add.graphics(0, 0);
         Background.beginFill(0x53BECE, 1);
-        Background.drawRect(0, 0, game.world.width + 500, game.world.height + 500);
+        Background.drawRect(0, 0, game.world.width + 1000, game.world.height + 500);
         Background.endFill();
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         map = game.add.tilemap('level1');
         map.addTilesetImage('tiles');
-        map.setCollisionBetween(1, 12);
+        map.setCollisionBetween(1, 4);
+        map.setCollisionBetween(7, 10);
         map.setCollisionBetween(13, 16);
         map.setCollisionBetween(19, 22);
+        map.setCollision([25, 26, 27, 28, 29, 30, 43, 44, 54, 60, 66, 77]);
         map.setTileIndexCallback(18, setCheckpointCoor, game);
         layer = map.createLayer('Tile Layer 1');
         causticLayer = map.createLayer('CausticTileLayer');
         map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
-        flag = new Flag(game, 40, 444.5);
+        flag = new Flag(game, 1550, 300);
         flag.enableBody = true;
         game.add.existing(flag);
+
+        ladders = game.add.group();
+        ladders.enableBody = true;
+        map.createFromObjects('ladders', 78, 'tiles', 77, true, false, ladders);
+        map.createFromObjects('ladders', 72, 'tiles', 71, true, false, ladders);
 
         player = game.add.sprite(0, 0, 'knight');
         player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
@@ -86,7 +95,7 @@ let Game = {
         checkpointSound = game.add.audio('checkpoint_sound');
 
         enemy = game.add.group();
-        createEnemy();
+        //createEnemy();
 
         daggers = game.add.group();
         daggers.enableBody = true;
@@ -112,6 +121,15 @@ let Game = {
         checkpoints.enableBody = true;
         map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
 
+        water = game.add.group();
+        water.enableBody = true;
+        map.createFromObjects('water', 55, 'tiles', 54, true, false, water);
+        map.createFromObjects('water', 56, 'tiles', 55, true, false, water);
+        map.createFromObjects('water', 57, 'tiles', 56, true, false, water);
+        map.createFromObjects('water', 58, 'tiles', 57, true, false, water);
+
+
+
         lifes = game.add.group();
         initLife(countOflifes);
         lifes.fixedToCamera = true;
@@ -135,7 +153,6 @@ let Game = {
         restart();
     },
     update: function() {
-        console.log('here');
         game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
         game.physics.arcade.collide(player, layer);
         game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
@@ -144,6 +161,10 @@ let Game = {
         game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
         game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
         game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
+        game.physics.arcade.overlap(player, water, getDamageFromTile, null, this);
+        if (!game.physics.arcade.overlap(player, ladders, onLadder, null, this)) {
+            setNormalGravity();
+        }
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
@@ -174,7 +195,7 @@ let Game = {
             player.animations.play('knight_idle');
         }
         if (actionKeys.jumpKey.isDown && player.body.onFloor() && status === 'idle') {
-            player.body.velocity.y = -200;
+            player.body.velocity.y = -175;
         }
         if (actionKeys.pause.isDown) {
             countOflifes = 3;
@@ -330,7 +351,7 @@ function restart() {
     lifes.removeAll();
     initLife(countOflifes);
     enemy.removeAll();
-    createEnemy();
+    //createEnemy();
     gameOver.visible = false;
     if (status === 'death') {
         coinsCount = 0;
@@ -426,6 +447,21 @@ function throwAdditionalWeapon() {
 function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
     enemy.destroy();
     additionalWeapon.kill();
+}
+
+function onLadder(player, ladder) {
+    if (cursors.up.isDown) {
+        player.body.velocity.y = -100;
+    } else if (cursors.down.isDown) {
+        player.body.velocity.y = 100;
+    } else {
+        player.body.velocity.y = 0;
+        player.body.gravity.y = 0;
+    }
+}
+
+function setNormalGravity() {
+    player.body.gravity.y = 300;
 }
 
 function create_level(level) {
