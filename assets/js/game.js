@@ -15,7 +15,6 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     skeletonKillSound,
     slashOnTargetSound,
     slashWithoutTarget,
-    walkOnGrassSound,
     gameOverSound,
     coinPickupSound,
     drinkPotionSound,
@@ -24,12 +23,20 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     daggerPickUpSound,
     checkpointSound;
 const screenWidth = 640,
-    screenHeight = 480,
-    start = {
-        x: 50,
-        y: 50
-    };
-var Game = {
+    screenHeight = 480;
+const start = {
+    x: 50,
+    y: 50
+};
+const style = {
+    font: "bold 30px Press Start 2P",
+    fill: "#fff",
+    boundsAlignH: "center",
+    boundsAlignV: "middle"
+};
+const countOfLevels = 2;
+let current_level = 1;
+let Game = {
     preload: function() {
         game.load.image('heart', 'assets/images/heart.png');
         game.load.image('potion_health', 'assets/images/potion_health.png');
@@ -41,7 +48,10 @@ var Game = {
         game.load.image('rectangle', 'assets/images/rectangle.jpg');
         game.load.image('check_mark', 'assets/images/flag/check_mark.png');
         game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
-        game.load.tilemap('level', 'assets/images/level.json', null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap('level1', 'assets/images/level1.json', null, Phaser.Tilemap.TILED_JSON);
+
+        game.load.tilemap('level2', 'assets/images/level2.json', null, Phaser.Tilemap.TILED_JSON);
+
         game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
         game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
         game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
@@ -51,7 +61,6 @@ var Game = {
         game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
         game.load.audio('slash_on_target_sound', 'assets/sounds/slash_on_target_2.mp3');
         game.load.audio('slash_without_target_sound', 'assets/sounds/slash_without_target.mp3');
-        game.load.audio('walk_on_grass_sound', 'assets/sounds/walk_on_grass.mp3');
         game.load.audio('game_over_sound', 'assets/sounds/game_over.mp3');
         game.load.audio('coin_pick_up_sound', 'assets/sounds/coin_pick_up.wav');
         game.load.audio('drink_potion_sound', 'assets/sounds/drink_potion.wav');
@@ -66,7 +75,8 @@ var Game = {
         Background.drawRect(0, 0, game.world.width + 500, game.world.height + 500);
         Background.endFill();
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        map = game.add.tilemap('level');
+
+        map = game.add.tilemap('level1');
         map.addTilesetImage('tiles');
         map.setCollisionBetween(1, 12);
         map.setCollisionBetween(13, 16);
@@ -76,12 +86,11 @@ var Game = {
         causticLayer = map.createLayer('CausticTileLayer');
         map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
-
         flag = new Flag(game, 40, 444.5);
         flag.enableBody = true;
         game.add.existing(flag);
 
-        player = game.add.sprite(32, game.world.height - 150, 'knight');
+        player = game.add.sprite(0, 0, 'knight');
         player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
         player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
         player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 20, true);
@@ -92,15 +101,14 @@ var Game = {
         player.body.gravity.y = 300;
         player.body.bounce.y = 0.1;
         player.anchor.setTo(0.5, 0.5);
-        player.x = 50;
-        player.y = 50;
+        player.x = start.x;
+        player.y = start.y;
 
         getDamageSound = game.add.audio('get_damage_sound');
         slimeKillSound = game.add.audio('slime_kill_sound');
         skeletonKillSound = game.add.audio('skeleton_kill_sound');
         slashOnTargetSound = game.add.audio('slash_on_target_sound');
         slashWithoutTargetSound = game.add.audio('slash_without_target_sound');
-        walkOnGrassSound = game.add.audio('walk_on_grass_sound');
         gameOverSound = game.add.audio('game_over_sound');
         coinPickupSound = game.add.audio('coin_pick_up_sound');
         drinkPotionSound = game.add.audio('drink_potion_sound');
@@ -108,7 +116,6 @@ var Game = {
         daggerThrowSound = game.add.audio('dagger_throw_sound');
         daggerPickUpSound = game.add.audio('dagger_pick_up_sound');
         checkpointSound = game.add.audio('checkpoint_sound');
-
 
         enemy = game.add.group();
         createEnemy();
@@ -137,17 +144,9 @@ var Game = {
         checkpoints.enableBody = true;
         map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
 
-
         lifes = game.add.group();
         initLife(countOflifes);
         lifes.fixedToCamera = true;
-
-        const style = {
-            font: "bold 30px Press Start 2P",
-            fill: "#fff",
-            boundsAlignH: "center",
-            boundsAlignV: "middle"
-        };
 
         gameOver = game.add.text(0, 0, "\t\t\tGame over! \nClick to restart", style);
         gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
@@ -169,7 +168,7 @@ var Game = {
     },
     update: function() {
         game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
-        game.physics.arcade.collide(player, layer, walkSound);
+        game.physics.arcade.collide(player, layer);
         game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
         game.physics.arcade.overlap(player, coins, getCoin, null, this);
         game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
@@ -211,6 +210,8 @@ var Game = {
         if (actionKeys.pause.isDown) {
             countOflifes = 3;
             status = 'death';
+            current_level = 1;
+            create_level('level1');
             restart();
             game.state.start('Menu');
         }
@@ -309,27 +310,51 @@ function getDamage() {
 }
 
 function createEnemy() {
-    skeleton = new Skeleton(game, 75, 124, 1, 50);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    skeleton = new Skeleton(game, 480, 124, -1, 50);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    skeleton = new Skeleton(game, 100, 304, 1, 50);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    skeleton = new Skeleton(game, 460, 304, -1, 50);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    skeleton = new Skeleton(game, 550, 304, -1, 50);
-    game.add.existing(skeleton);
-    enemy.add(skeleton);
-    slime = new Slime(game, 254, 76.5, 1, 50, 50);
-    game.add.existing(slime);
-    enemy.add(slime);
-    slime = new Slime(game, 852, 444.5, 1, 50, 50);
-    game.add.existing(slime);
-    enemy.add(slime);
+    if (current_level === 1) {
+        skeleton = new Skeleton(game, 75, 124, 1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        skeleton = new Skeleton(game, 480, 124, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        skeleton = new Skeleton(game, 100, 304, 1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        skeleton = new Skeleton(game, 460, 304, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        skeleton = new Skeleton(game, 550, 304, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        slime = new Slime(game, 254, 76.5, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 852, 444.5, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+    } else if (current_level === 2) {
+        slime = new Slime(game, 75, 124, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 480, 124, -1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 100, 304, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 460, 304, -1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 550, 304, -1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 254, 76.5, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 852, 444.5, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+    }
 }
 
 function restart() {
@@ -434,9 +459,59 @@ function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
     additionalWeapon.kill();
 }
 
-function walkSound() {
-    // if (cursors.left.isDown || cursors.right.isDown) {
-    //     if (!walkOnGrassSound.isPlaying)
-    //         walkOnGrassSound.play();
-    // }
+function create_level(level) {
+    flag.destroy();
+    map.destroy();
+    layer.destroy();
+    causticLayer.destroy();
+    coinsCounterImage.destroy();
+    player.destroy();
+    enemy.destroy();
+    coinsCounterText.visible = false;
+    map = game.add.tilemap(level);
+    map.addTilesetImage('tiles');
+    map.setCollisionBetween(1, 12);
+    map.setCollisionBetween(13, 16);
+    map.setCollisionBetween(19, 22);
+    map.setTileIndexCallback(18, setCheckpointCoor, game);
+    layer = map.createLayer('Tile Layer 1');
+    causticLayer = map.createLayer('CausticTileLayer');
+    map.setCollisionBetween(31, 33, true, causticLayer);
+    layer.resizeWorld();
+    flag = new Flag(game, 40, 444.5);
+    flag.enableBody = true;
+    game.add.existing(flag);
+    coinsCounterText = game.add.text(45, 40, ':0', {
+        font: "20px Press Start 2P",
+        fill: "#190707"
+    });
+    coinsCounterText.fixedToCamera = true;
+    coinsCounterImage = game.add.sprite(20, 35, 'coin_counter');
+    coinsCounterImage.scale.setTo(0.1, 0.1);
+    coinsCounterImage.fixedToCamera = true;
+
+    player = game.add.sprite(0, 0, 'knight');
+    player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
+    player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
+    player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 20, true);
+    player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 20, true);
+    player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
+    player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 6, true);
+    game.physics.enable(player);
+    player.body.gravity.y = 300;
+    player.body.bounce.y = 0.1;
+    player.anchor.setTo(0.5, 0.5);
+    player.x = start.x;
+    player.y = start.y;
+
+    enemy = game.add.group();
+    createEnemy();
+
+    gameOver = game.add.text(0, 0, "\t\t\tGame over! \nClick to restart", style);
+    gameOver.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+    gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
+    gameOver.visible = false;
+    gameOver.fixedToCamera = true;
+    game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
+
 }

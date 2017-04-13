@@ -107,6 +107,8 @@ function unpause() {
         heart_text_tmp.visible = false;
         dagger_text_tmp.visible = false;
         next_level_text_tmp.visible = false;
+        if (current_level < countOfLevels) current_level++;
+        create_level('level' + current_level);
         restart();
         game.paused = false;
         next_level = false;
