@@ -42,7 +42,7 @@ let Game = {
     create: function() {
         Background = game.add.graphics(0, 0);
         Background.beginFill(0x53BECE, 1);
-        Background.drawRect(0, 0, game.world.width + 1000, game.world.height + 500);
+        Background.drawRect(0, 0, game.world.width + 2000, game.world.height + 500);
         Background.endFill();
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -58,7 +58,7 @@ let Game = {
         causticLayer = map.createLayer('CausticTileLayer');
         map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
-        flag = new Flag(game, 1550, 300);
+        flag = new Flag(game, 2355, 300);
         flag.enableBody = true;
         game.add.existing(flag);
 
