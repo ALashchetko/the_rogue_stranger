@@ -22,8 +22,10 @@ const Settings = {
         const back = this.add.button(315, 410, 'back', this.menu, this);
         back.anchor.setTo(0.5, 0.5);
         back.scale.setTo(0.2, 0.2);
+        menuMusic.play();
     },
     menu: function() {
+        menuMusic.stop();
         this.state.start('Menu');
     }
 }

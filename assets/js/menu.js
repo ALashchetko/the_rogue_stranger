@@ -1,5 +1,5 @@
 let load_complete = false;
-let menuMusic;
+let menuMusic, musicOn = false;
 const Menu = {
     create: function() {
         const background = game.add.sprite(0, 0, 'back1')
@@ -33,12 +33,12 @@ const Menu = {
         }
     },
     startGame: function() {
-        this.state.start('Game');
         menuMusic.stop();
+        this.state.start('Game');
     },
     settings: function() {
-        this.state.start('Settings');
         menuMusic.stop();
+        this.state.start('Settings');
     }
 };
 
@@ -79,6 +79,7 @@ function menuLoad() {
     game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
     game.load.audio('slash_on_target_sound', 'assets/sounds/slash_on_target_2.mp3');
     game.load.audio('slash_without_target_sound', 'assets/sounds/slash_without_target.mp3');
+    game.load.audio('jump_sound', 'assets/sounds/jump.wav');
     game.load.audio('game_over_sound', 'assets/sounds/game_over.mp3');
     game.load.audio('coin_pick_up_sound', 'assets/sounds/coin_pick_up.wav');
     game.load.audio('drink_potion_sound', 'assets/sounds/drink_potion.wav');

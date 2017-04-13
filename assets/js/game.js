@@ -17,6 +17,7 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     skeletonKillSound,
     slashOnTargetSound,
     slashWithoutTarget,
+    jumpSound,
     gameOverSound,
     coinPickupSound,
     drinkPotionSound,
@@ -87,6 +88,7 @@ let Game = {
         skeletonKillSound = game.add.audio('skeleton_kill_sound');
         slashOnTargetSound = game.add.audio('slash_on_target_sound');
         slashWithoutTargetSound = game.add.audio('slash_without_target_sound');
+        jumpSound = game.add.audio('jump_sound');
         gameOverSound = game.add.audio('game_over_sound');
         coinPickupSound = game.add.audio('coin_pick_up_sound');
         drinkPotionSound = game.add.audio('drink_potion_sound');
@@ -200,6 +202,7 @@ let Game = {
         }
         if (actionKeys.jumpKey.isDown && player.body.onFloor() && status === 'idle') {
             player.body.velocity.y = -175;
+            jumpSound.play();
         }
         if (actionKeys.pause.isDown) {
             countOflifes = 3;
