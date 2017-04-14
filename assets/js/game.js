@@ -28,9 +28,9 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     gameMusic;
 const screenWidth = 640,
     screenHeight = 480;
-const start = {
+let start = {
     x: 50,
-    y: 50
+    y: 250
 };
 const style = {
     font: "bold 30px Press Start 2P",
@@ -490,7 +490,9 @@ function create_level(level) {
     lifes.destroy();
     water.destroy();
     ladders.destroy();
-    coinsCounterText.visible = false;
+
+    if (level === 'level2') start.y = 90;
+
     Background = game.add.sprite(0, 0, level + 'back');
     Background.fixedToCamera = true;
     map = game.add.tilemap(level);
@@ -508,10 +510,6 @@ function create_level(level) {
     flag = new Flag(game, 40, 444.5);
     flag.enableBody = true;
     game.add.existing(flag);
-    coinsCounterText = game.add.text(45, 40, ':0', {
-        font: "20px Press Start 2P",
-        fill: "#190707"
-    });
 
     daggers = game.add.group();
     daggers.enableBody = true;

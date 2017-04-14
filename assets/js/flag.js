@@ -102,9 +102,7 @@ function endOfLevel() {
     nextLevel_button.fixedToCamera = true;
 
     game.input.onDown.add(unpause, self);
-
 }
-
 
 function unpause() {
     if (game.pause || next_level) {
