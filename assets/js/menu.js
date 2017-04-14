@@ -49,13 +49,13 @@ function menuLoad() {
     game.load.image('settings', 'assets/images/rules.png');
     game.load.image('back1', 'assets/images/back1.jpg');
     game.load.image('back', 'assets/images/back.png');
-    game.load.image('a_button', 'assets/images/Settings/a_button.png');
-    game.load.image('d_button', 'assets/images/Settings/d_button.png');
-    game.load.image('k_button', 'assets/images/Settings/k_button.png');
-    game.load.image('esc_button', 'assets/images/Settings/esc_button.png');
-    game.load.image('c_button', 'assets/images/Settings/c_button.png');
-    game.load.image('arrows', 'assets/images/Settings/arrows.png');
-    game.load.image('space', 'assets/images/Settings/space.png');
+    game.load.image('a_button', 'assets/images/settings/a_button.png');
+    game.load.image('d_button', 'assets/images/settings/d_button.png');
+    game.load.image('k_button', 'assets/images/settings/k_button.png');
+    game.load.image('esc_button', 'assets/images/settings/esc_button.png');
+    game.load.image('c_button', 'assets/images/settings/c_button.png');
+    game.load.image('arrows', 'assets/images/settings/arrows.png');
+    game.load.image('space', 'assets/images/settings/space.png');
     game.load.image('heart', 'assets/images/heart.png');
     game.load.image('potion_health', 'assets/images/potion_health.png');
     game.load.image('coin', 'assets/images/coin.png');
@@ -64,7 +64,7 @@ function menuLoad() {
     game.load.image('coin_counter', 'assets/images/coin_counter.png');
     game.load.image('skeleton_bone', 'assets/images/skeleton/skeleton_bone.png');
     game.load.image('rectangle', 'assets/images/rectangle.jpg');
-    game.load.image('level1back', 'assets/images/level1back.png');
+    game.load.image('level1back', 'assets/images/backg_lvl_1.png');
     game.load.image('level2back', 'assets/images/level2back.png');
     game.load.image('check_mark', 'assets/images/flag/check_mark.png');
 
