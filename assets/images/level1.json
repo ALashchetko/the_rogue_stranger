@@ -1508,7 +1508,7 @@
          "tilewidth":16
         }, 
         {
-         "columns":20,
+         "columns":0,
          "firstgid":88,
          "image":"..\/..\/..\/..\/Desktop\/pgil_tiles_stonehouse_OCT29 (1).png",
          "imageheight":240,
@@ -1516,7 +1516,7 @@
          "margin":0,
          "name":"pgil_tiles_stonehouse_OCT29 (1)",
          "spacing":0,
-         "tilecount":300,
+         "tilecount":0,
          "tileheight":16,
          "tilewidth":16
         }],

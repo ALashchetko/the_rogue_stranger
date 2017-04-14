@@ -44,9 +44,6 @@ let Game = {
     create: function() {
         Background = game.add.sprite(0, 0, 'level1back');
         Background.fixedToCamera = true;
-        // Background.beginFill(0x53BECE, 1);
-        // Background.drawRect(0, 0, game.world.width + 2000, game.world.height + 500);
-        // Background.endFill();
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         map = game.add.tilemap('level1');
@@ -485,14 +482,24 @@ function create_level(level) {
     coinsCounterImage.destroy();
     player.destroy();
     enemy.destroy();
+    coins.destroy();
+    daggers.destroy();
+    potionsHealth.destroy();
+    checkpoints.destroy();
+    checkpoints.destroy();
+    lifes.destroy();
+    water.destroy();
+    ladders.destroy();
     coinsCounterText.visible = false;
-    Background = game.add.sprite(0, 0, 'level' + current_level + 'back');
+    Background = game.add.sprite(0, 0, level + 'back');
     Background.fixedToCamera = true;
     map = game.add.tilemap(level);
     map.addTilesetImage('tiles');
-    map.setCollisionBetween(1, 12);
+    map.setCollisionBetween(1, 4);
+    map.setCollisionBetween(7, 10);
     map.setCollisionBetween(13, 16);
     map.setCollisionBetween(19, 22);
+    map.setCollision([25, 26, 27, 28, 29, 30, 43, 44, 54, 60, 66, 77]);
     map.setTileIndexCallback(18, setCheckpointCoor, game);
     layer = map.createLayer('Tile Layer 1');
     causticLayer = map.createLayer('CausticTileLayer');
@@ -505,10 +512,47 @@ function create_level(level) {
         font: "20px Press Start 2P",
         fill: "#190707"
     });
+
+    daggers = game.add.group();
+    daggers.enableBody = true;
+    map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
+
+    coins = game.add.group();
+    coins.enableBody = true;
+    map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
+    coinsCounterText = game.add.text(45, 40, ':0', {
+        font: "20px Press Start 2P",
+        fill: "#190707"
+    });
+
+    potionsHealth = game.add.group();
+    potionsHealth.enableBody = true;
+    map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
+
+    checkpoints = game.add.group();
+    checkpoints.enableBody = true;
+    map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
+
+    ladders = game.add.group();
+    ladders.enableBody = true;
+    map.createFromObjects('ladders', 78, 'tiles', 77, true, false, ladders);
+    map.createFromObjects('ladders', 72, 'tiles', 71, true, false, ladders);
+
+    water = game.add.group();
+    water.enableBody = true;
+    map.createFromObjects('water', 55, 'tiles', 54, true, false, water);
+    map.createFromObjects('water', 56, 'tiles', 55, true, false, water);
+    map.createFromObjects('water', 57, 'tiles', 56, true, false, water);
+    map.createFromObjects('water', 58, 'tiles', 57, true, false, water);
+
     coinsCounterText.fixedToCamera = true;
     coinsCounterImage = game.add.sprite(20, 35, 'coin_counter');
     coinsCounterImage.scale.setTo(0.1, 0.1);
     coinsCounterImage.fixedToCamera = true;
+
+    lifes = game.add.group();
+    initLife(countOflifes);
+    lifes.fixedToCamera = true;
 
     player = game.add.sprite(0, 0, 'knight');
     player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
@@ -533,5 +577,4 @@ function create_level(level) {
     gameOver.visible = false;
     gameOver.fixedToCamera = true;
     game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
-
 }
