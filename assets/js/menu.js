@@ -45,7 +45,7 @@ const Menu = {
 let text;
 
 function menuLoad() {
-    game.load.image('start', '../assets/images/new_game.png');
+    game.load.image('start', 'assets/images/new_game.png');
     game.load.image('settings', 'assets/images/rules.png');
     game.load.image('back1', 'assets/images/back1.jpg');
     game.load.image('back', 'assets/images/back.png');
