@@ -200,12 +200,13 @@ let Game = {
         }
         if (actionKeys.pause.isDown) {
             countOflifes = 3;
+            start.y = 250;
             status = 'death';
             current_level = 1;
             create_level('level1');
             restart();
-            game.state.start('Menu');
             gameMusic.stop();
+            game.state.start('Menu');
         }
     }
 };
@@ -332,12 +333,24 @@ function createEnemy() {
         game.add.existing(slime);
         enemy.add(slime);
     } else if (current_level === 2) {
-        slime = new Slime(game, 75, 124, 1, 50, 50);
+        slime = new Slime(game, 140, 124, 1, 50, 40);
         game.add.existing(slime);
         enemy.add(slime);
-        slime = new Slime(game, 480, 124, -1, 50, 50);
+        slime = new Slime(game, 280, 76.5, 1, 50, 40);
         game.add.existing(slime);
         enemy.add(slime);
+        skeleton = new Skeleton(game, 480, 124, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        skeleton = new Skeleton(game, 925, 120, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        slime = new Slime(game, 1270, 100, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
+        skeleton = new Skeleton(game, 725, 430, -1, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
         slime = new Slime(game, 100, 304, 1, 50, 50);
         game.add.existing(slime);
         enemy.add(slime);
@@ -345,9 +358,6 @@ function createEnemy() {
         game.add.existing(slime);
         enemy.add(slime);
         slime = new Slime(game, 550, 304, -1, 50, 50);
-        game.add.existing(slime);
-        enemy.add(slime);
-        slime = new Slime(game, 254, 76.5, 1, 50, 50);
         game.add.existing(slime);
         enemy.add(slime);
         slime = new Slime(game, 852, 444.5, 1, 50, 50);
@@ -491,6 +501,7 @@ function create_level(level) {
     water.destroy();
     ladders.destroy();
 
+    if (level === 'level1') start.y = 250;
     if (level === 'level2') start.y = 90;
 
     Background = game.add.sprite(0, 0, level + 'back');
