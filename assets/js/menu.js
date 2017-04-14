@@ -64,9 +64,10 @@ function menuLoad() {
     game.load.image('coin_counter', 'assets/images/coin_counter.png');
     game.load.image('skeleton_bone', 'assets/images/skeleton/skeleton_bone.png');
     game.load.image('rectangle', 'assets/images/rectangle.jpg');
-    game.load.image('level1back', 'assets/images/level1back.gif');
+    game.load.image('level1back', 'assets/images/backg_lvl_1.png');
     game.load.image('level2back', 'assets/images/level2back.png');
     game.load.image('check_mark', 'assets/images/flag/check_mark.png');
+
     game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
 
     game.load.tilemap('level1', 'assets/images/level1.json', null, Phaser.Tilemap.TILED_JSON);
