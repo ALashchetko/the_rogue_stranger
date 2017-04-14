@@ -42,10 +42,11 @@ const countOfLevels = 2;
 let current_level = 1;
 let Game = {
     create: function() {
-        Background = game.add.graphics(0, 0);
-        Background.beginFill(0x53BECE, 1);
-        Background.drawRect(0, 0, game.world.width + 2000, game.world.height + 500);
-        Background.endFill();
+        Background = game.add.sprite(0, 0, 'level1back');
+        Background.fixedToCamera = true;
+        // Background.beginFill(0x53BECE, 1);
+        // Background.drawRect(0, 0, game.world.width + 2000, game.world.height + 500);
+        // Background.endFill();
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         map = game.add.tilemap('level1');
@@ -131,8 +132,6 @@ let Game = {
         map.createFromObjects('water', 56, 'tiles', 55, true, false, water);
         map.createFromObjects('water', 57, 'tiles', 56, true, false, water);
         map.createFromObjects('water', 58, 'tiles', 57, true, false, water);
-
-
 
         lifes = game.add.group();
         initLife(countOflifes);
@@ -487,6 +486,8 @@ function create_level(level) {
     player.destroy();
     enemy.destroy();
     coinsCounterText.visible = false;
+    Background = game.add.sprite(0, 0, 'level' + current_level + 'back');
+    Background.fixedToCamera = true;
     map = game.add.tilemap(level);
     map.addTilesetImage('tiles');
     map.setCollisionBetween(1, 12);
