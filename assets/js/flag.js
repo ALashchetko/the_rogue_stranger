@@ -1,4 +1,4 @@
-let rectangle, heart_text_tmp, heart_tmp, dagger_text_tmp, dagger_tmp,
+let heart_text_tmp, heart_tmp, dagger_text_tmp, dagger_tmp,
     next_level_text_tmp, coin_tmp1, coin_tmp2, addLife_button, addWeapon_button,
     nextLevel_button, next_level = false;
 
@@ -25,7 +25,7 @@ Flag.prototype.update = function() {
 
 function endOfLevel() {
     game.paused = true;
-    rectangle = game.add.sprite(320, 240, 'rectangle');
+    const rectangle = game.add.sprite(320, 240, 'rectangle');
     rectangle.anchor.setTo(0.5, 0.5);
     coinLeftSound = game.add.audio('coin_left_sound');
     rectangle.fixedToCamera = true;
@@ -94,6 +94,7 @@ function endOfLevel() {
     addWeapon_button.fixedToCamera = true;
 
     nextLevel_button = game.add.button(400, 290, 'check_mark', () => {
+        rectangle.destroy();
         next_level = true;
         unpause();
     }, this);
@@ -106,7 +107,6 @@ function endOfLevel() {
 
 function unpause() {
     if (game.pause || next_level) {
-        rectangle.destroy();
         addLife_button.destroy();
         addWeapon_button.destroy();
         nextLevel_button.destroy();
@@ -119,7 +119,6 @@ function unpause() {
         next_level_text_tmp.visible = false;
         if (current_level < countOfLevels) current_level++;
         create_level('level' + current_level);
-        restart();
         game.paused = false;
         next_level = false;
     }

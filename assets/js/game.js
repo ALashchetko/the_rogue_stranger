@@ -2,13 +2,13 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     coinsCounterText, coins, coinsCount = 0,
     checkpoints, haveAdditionalWeapon = false,
     additionalWeaponIcon, add_weapon = false,
-    lifes, status = 'idle',
+    lifes,
     ladders,
     water,
     gameOver,
     tombstones,
     countOflifes = 3,
-    additionalWeapon, daggers, enemy, bone, flag,
+    additionalWeapon, daggers, enemy, flag,
     checkpointCoor = {
         x: 50,
         y: 50,
@@ -30,10 +30,6 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     gameMusic;
 const screenWidth = 640,
     screenHeight = 480;
-let start = {
-    x: 50,
-    y: 250
-};
 const style = {
     font: "bold 30px Press Start 2P",
     fill: "#fff",
@@ -42,6 +38,7 @@ const style = {
 };
 const countOfLevels = 2;
 let current_level = 1;
+
 let Game = {
     create: function() {
         Background = game.add.sprite(0, 0, 'level1back');
@@ -60,6 +57,7 @@ let Game = {
         causticLayer = map.createLayer('CausticTileLayer');
         map.setCollisionBetween(31, 33, true, causticLayer);
         layer.resizeWorld();
+
         flag = new Flag(game, 2355, 300);
         flag.enableBody = true;
         game.add.existing(flag);
@@ -73,19 +71,8 @@ let Game = {
         map.createFromObjects('ladders', 78, 'tiles', 77, true, false, ladders);
         map.createFromObjects('ladders', 72, 'tiles', 71, true, false, ladders);
 
-        player = game.add.sprite(0, 0, 'knight');
-        player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
-        player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
-        player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 20, true);
-        player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 20, true);
-        player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
-        player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 6, true);
-        game.physics.enable(player);
-        player.body.gravity.y = 300;
-        player.body.bounce.y = 0.1;
-        player.anchor.setTo(0.5, 0.5);
-        player.x = start.x;
-        player.y = start.y;
+        player = new Player(game);
+        game.add.existing(player);
 
         getDamageSound = game.add.audio('get_damage_sound');
         slimeKillSound = game.add.audio('slime_kill_sound');
@@ -130,8 +117,6 @@ let Game = {
         checkpoints.enableBody = true;
         map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
 
-
-
         water = game.add.group();
         water.enableBody = true;
         map.createFromObjects('water', 55, 'tiles', 54, true, false, water);
@@ -158,56 +143,15 @@ let Game = {
             'pause': Phaser.KeyCode.ESC,
             'additionalWeapon': Phaser.KeyCode.C
         })
-        game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
         restart();
     },
     update: function() {
-        game.physics.arcade.collide(player, causticLayer, getDamageFromTile);
-        game.physics.arcade.collide(player, layer);
-        game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
-        game.physics.arcade.overlap(player, coins, getCoin, null, this);
-        game.physics.arcade.overlap(player, potionsHealth, addLife, null, this);
-        game.physics.arcade.overlap(player, checkpoints, setCheckpointCoor, null, this);
-        game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
-        game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
-        game.physics.arcade.overlap(player, water, getDamageFromTile, null, this);
         game.physics.arcade.overlap(player, tombstones, skeletonUprising, null, this);
-        if (!game.physics.arcade.overlap(player, ladders, onLadder, null, this)) {
-            setNormalGravity();
-        }
+        game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
+        game.physics.arcade.collide(additionalWeapon, layer, () => additionalWeapon.kill());
         player.body.velocity.x = 0;
         getDamageFromTouch();
         death();
-        if (cursors.left.isDown && status === 'idle') {
-            player.body.velocity.x = -100;
-            player.scale.setTo(-1, 1);
-            player.animations.play('knight_walk');
-        } else if (cursors.right.isDown && status === 'idle') {
-            player.body.velocity.x = 100;
-            player.scale.setTo(1, 1);
-            player.animations.play('knight_walk');
-        } else if (actionKeys.slash.isDown && status === 'idle') {
-            player.animations.play('knight_slash');
-            if (player.animations.currentFrame.name === 'knight_slash7')
-                getSlash();
-        } else if (actionKeys.block.isDown && status === 'idle') {
-            player.animations.play('knight_block');
-            if (player.animations.currentFrame.name === 'knight_block6')
-                player.animations.paused = true;
-        } else if (actionKeys.additionalWeapon.isDown && status === 'idle') {
-            throwAdditionalWeapon();
-        } else if (actionKeys.death.isDown || status === 'hit') {
-            status = 'hit';
-            player.animations.play('knight_hit');
-            if (player.animations.currentFrame.name === 'knight_death2')
-                getDamage();
-        } else if (status === 'idle') {
-            player.animations.play('knight_idle');
-        }
-        if (actionKeys.jumpKey.isDown && player.body.onFloor() && status === 'idle') {
-            player.body.velocity.y = -175;
-            jumpSound.play();
-        }
         if (actionKeys.pause.isDown) {
             countOflifes = 3;
             start.y = 250;
@@ -240,79 +184,6 @@ function addLife(player, potionHealth) {
     potionHealth.kill();
 }
 
-function getSlash() {
-    slashWithoutTargetSound.play();
-    const x_range = 40,
-        y_range = 15;
-    const hit = (i, scale) => {
-        return scale ?
-            player.world.x < enemy.children[i].world.x &&
-            player.world.x + x_range >= enemy.children[i].world.x &&
-            player.world.y + y_range > enemy.children[i].world.y &&
-            player.world.y - (y_range + 5) < enemy.children[i].world.y :
-            player.world.x > enemy.children[i].world.x &&
-            player.world.x - x_range <= enemy.children[i].world.x &&
-            player.world.y + y_range > enemy.children[i].world.y &&
-            player.world.y - (y_range + 5) < enemy.children[i].world.y;
-    };
-    for (let i = 0; i < enemy.countLiving(); i++) {
-        if ((player.scale.x > 0 && hit(i, true)) || (player.scale.x < 0 && hit(i, false))) {
-            slashOnTargetSound.play();
-            enemy.getChildAt(i).destroy();
-        }
-    }
-}
-
-function getDamageFromTouch() {
-    const x_range = 10,
-        y_range = 15,
-        hitSpeed = 500;
-    const touch = (i, scale) => {
-        return scale ?
-            player.world.x < enemy.children[i].world.x &&
-            player.world.x + x_range >= enemy.children[i].world.x &&
-            player.world.y + y_range >= enemy.children[i].world.y &&
-            player.world.y - (y_range + 5) <= enemy.children[i].world.y :
-            player.world.x > enemy.children[i].world.x &&
-            player.world.x - x_range <= enemy.children[i].world.x &&
-            player.world.y + y_range >= enemy.children[i].world.y &&
-            player.world.y - (y_range + 5) <= enemy.children[i].world.y;
-    };
-    for (let i = 0; i < enemy.countLiving(); i++) {
-        if ((player.scale.x > 0 && touch(i, true)) || (player.scale.x < 0 && touch(i, false))) {
-            if (player.animations.currentFrame.name != 'knight_block6') status = 'hit';
-            else shieldSound.play();
-            if (player.scale.x > 0) enemy.children[i].scale.x < 0 ? player.body.velocity.x = -hitSpeed * 2.5 : player.body.velocity.x = -hitSpeed;
-            else enemy.children[i].scale.x < 0 ? player.body.velocity.x = hitSpeed : player.body.velocity.x = hitSpeed * 2.5;
-        }
-    }
-}
-
-function death() {
-    if (!lifes.countLiving()) {
-        gameMusic.stop();
-        status = 'death';
-        player.animations.play('knight_death');
-        if (player.animations.currentFrame.name === 'knight_death8') {
-            if (!gameOverSound.isPlaying)
-                gameOverSound.play();
-            player.kill();
-            gameOver.visible = true;
-            game.input.onTap.addOnce(restart, this);
-        }
-    }
-}
-
-function getDamage() {
-    getDamageSound.play();
-    let life = lifes.getChildAt(lifes.countLiving() - 1);
-    if (!lifes.countLiving()) death();
-    else {
-        life.kill();
-        status = 'idle';
-    }
-}
-
 function createEnemy() {
     if (current_level === 1) {
         skeleton = new Skeleton(game, 255, 290, 1, 50);
@@ -343,24 +214,24 @@ function createEnemy() {
         game.add.existing(slime);
         enemy.add(slime);
     } else if (current_level === 2) {
-        slime = new Slime(game, 140, 124, 1, 50, 40);
-        game.add.existing(slime);
-        enemy.add(slime);
-        slime = new Slime(game, 280, 76.5, 1, 50, 40);
-        game.add.existing(slime);
-        enemy.add(slime);
         skeleton = new Skeleton(game, 480, 124, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
         skeleton = new Skeleton(game, 925, 120, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
-        slime = new Slime(game, 1270, 100, 1, 50, 50);
-        game.add.existing(slime);
-        enemy.add(slime);
         skeleton = new Skeleton(game, 725, 430, -1, 50);
         game.add.existing(skeleton);
         enemy.add(skeleton);
+        slime = new Slime(game, 100, 124, 1, 50, 40);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 280, 76.5, 1, 50, 40);
+        game.add.existing(slime);
+        enemy.add(slime);
+        slime = new Slime(game, 1270, 100, 1, 50, 50);
+        game.add.existing(slime);
+        enemy.add(slime);
         slime = new Slime(game, 100, 304, 1, 50, 50);
         game.add.existing(slime);
         enemy.add(slime);
@@ -374,47 +245,6 @@ function createEnemy() {
         game.add.existing(slime);
         enemy.add(slime);
     }
-}
-
-function restart() {
-    gameMusic.play();
-    lifes.removeAll();
-    initLife(countOflifes);
-    enemy.removeAll();
-    createEnemy();
-    gameOver.visible = false;
-    if (status === 'death') {
-        coinsCount = 0;
-        player.revive();
-    }
-    player.x = start.x;
-    player.y = start.y;
-    player.scale.setTo(1, 1);
-    status = 'idle';
-    daggers.removeAll();
-    if (additionalWeaponIcon) additionalWeaponIcon.kill();
-    haveAdditionalWeapon = false
-    map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
-    coinsCounterText.setText(':' + coinsCount);
-    coins.removeAll();
-    map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
-    potionsHealth.removeAll();
-    map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
-    checkpointCoor.x = start.x;
-    checkpointCoor.y = start.y;
-    checkpoints.children.map(checkpoint => checkpoint.frame = 16);
-    if (add_weapon) {
-        getAdditionalWeapon(player, game.add.sprite(0, 0, 'dagger_on_ground'));
-        add_weapon = false;
-    }
-    tombstones.removeAll();
-    map.createFromObjects('tombstones', 88, 'tombstone', 0, true, false, tombstones);
-}
-
-function getDamageFromTile() {
-    player.x = checkpointCoor.x;
-    player.y = checkpointCoor.y;
-    status = 'hit';
 }
 
 function setCheckpointCoor(player, checkpoint) {
@@ -481,21 +311,6 @@ function killEnemyByAdditionalWeapon(additionalWeapon, enemy) {
     additionalWeapon.kill();
 }
 
-function onLadder(player, ladder) {
-    if (cursors.up.isDown) {
-        player.body.velocity.y = -100;
-    } else if (cursors.down.isDown) {
-        player.body.velocity.y = 100;
-    } else {
-        player.body.velocity.y = 0;
-        player.body.gravity.y = 0;
-    }
-}
-
-function setNormalGravity() {
-    player.body.gravity.y = 300;
-}
-
 function skeletonUprising(player, tombstone) {
     if (lifes.countLiving()) {
         alertSound.play();
@@ -522,6 +337,7 @@ function create_level(level) {
     lifes.destroy();
     water.destroy();
     ladders.destroy();
+    player.destroy();
 
     if (level === 'level1') start.y = 250;
     if (level === 'level2') start.y = 90;
@@ -556,9 +372,16 @@ function create_level(level) {
         fill: "#190707"
     });
 
+    player = new Player(game);
+    game.add.existing(player);
+
     potionsHealth = game.add.group();
     potionsHealth.enableBody = true;
     map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
+
+    tombstones = game.add.group();
+    tombstones.enableBody = true;
+    map.createFromObjects('tombstones', 88, 'tombstone', 0, true, false, tombstones);
 
     checkpoints = game.add.group();
     checkpoints.enableBody = true;
@@ -585,20 +408,6 @@ function create_level(level) {
     initLife(countOflifes);
     lifes.fixedToCamera = true;
 
-    player = game.add.sprite(0, 0, 'knight');
-    player.animations.add('knight_walk', Phaser.Animation.generateFrameNames('knight_walk', 0, 7), 8, true);
-    player.animations.add('knight_idle', Phaser.Animation.generateFrameNames('knight_idle', 0, 3), 4, true);
-    player.animations.add('knight_slash', Phaser.Animation.generateFrameNames('knight_slash', 0, 9), 20, true);
-    player.animations.add('knight_block', Phaser.Animation.generateFrameNames('knight_block', 0, 6), 20, true);
-    player.animations.add('knight_hit', Phaser.Animation.generateFrameNames('knight_death', 0, 2), 10, true);
-    player.animations.add('knight_death', Phaser.Animation.generateFrameNames('knight_death', 0, 8), 6, true);
-    game.physics.enable(player);
-    player.body.gravity.y = 300;
-    player.body.bounce.y = 0.1;
-    player.anchor.setTo(0.5, 0.5);
-    player.x = start.x;
-    player.y = start.y;
-
     enemy = game.add.group();
     createEnemy();
 
@@ -607,5 +416,40 @@ function create_level(level) {
     gameOver.setTextBounds(0, screenHeight / 2, screenWidth, 50);
     gameOver.visible = false;
     gameOver.fixedToCamera = true;
-    game.camera.follow(player, Phaser.Camera.FOLLOW_PLATFORMER);
+    restart();
+}
+
+function restart() {
+    gameMusic.play();
+    lifes.removeAll();
+    initLife(countOflifes);
+    enemy.removeAll();
+    createEnemy();
+    gameOver.visible = false;
+    if (status === 'death') {
+        coinsCount = 0;
+        player.revive();
+    }
+    player.x = start.x;
+    player.y = start.y;
+    player.scale.setTo(1, 1);
+    status = 'idle';
+    daggers.removeAll();
+    if (additionalWeaponIcon) additionalWeaponIcon.kill();
+    haveAdditionalWeapon = false
+    map.createFromObjects('daggers', 87, 'dagger_on_ground', 0, true, false, daggers);
+    coinsCounterText.setText(':' + coinsCount);
+    coins.removeAll();
+    map.createFromObjects('coins', 85, 'coin', 0, true, false, coins);
+    potionsHealth.removeAll();
+    map.createFromObjects('h_potions', 86, 'potion_health', 0, true, false, potionsHealth);
+    checkpointCoor.x = start.x;
+    checkpointCoor.y = start.y;
+    checkpoints.children.map(checkpoint => checkpoint.frame = 16);
+    if (add_weapon) {
+        getAdditionalWeapon(player, game.add.sprite(0, 0, 'dagger_on_ground'));
+        add_weapon = false;
+    }
+    tombstones.removeAll();
+    map.createFromObjects('tombstones', 88, 'tombstone', 0, true, false, tombstones);
 }
