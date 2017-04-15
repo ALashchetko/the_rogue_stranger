@@ -6,6 +6,7 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     ladders,
     water,
     gameOver,
+    tombstones,
     countOflifes = 3,
     additionalWeapon, daggers, enemy, bone, flag,
     checkpointCoor = {
@@ -25,6 +26,7 @@ var map, layer, causticLayer, player, Background, cursors, actionKeys,
     daggerThrowSound,
     daggerPickUpSound,
     checkpointSound,
+    alertSound,
     gameMusic;
 const screenWidth = 640,
     screenHeight = 480;
@@ -62,6 +64,10 @@ let Game = {
         flag.enableBody = true;
         game.add.existing(flag);
 
+        tombstones = game.add.group();
+        tombstones.enableBody = true;
+        map.createFromObjects('tombstones', 88, 'tombstone', 0, true, false, tombstones);
+
         ladders = game.add.group();
         ladders.enableBody = true;
         map.createFromObjects('ladders', 78, 'tiles', 77, true, false, ladders);
@@ -95,6 +101,7 @@ let Game = {
         daggerPickUpSound = game.add.audio('dagger_pick_up_sound');
         checkpointSound = game.add.audio('checkpoint_sound');
         gameMusic = game.add.audio('game_music');
+        alertSound = game.add.audio('alert_sound');
         gameMusic.loop = true;
 
         enemy = game.add.group();
@@ -122,6 +129,8 @@ let Game = {
         checkpoints = game.add.group();
         checkpoints.enableBody = true;
         map.createFromObjects('checkpoints', 18, 'tiles', 16, true, false, checkpoints);
+
+
 
         water = game.add.group();
         water.enableBody = true;
@@ -162,6 +171,7 @@ let Game = {
         game.physics.arcade.overlap(additionalWeapon, enemy, killEnemyByAdditionalWeapon, null, this);
         game.physics.arcade.overlap(player, daggers, getAdditionalWeapon, null, this);
         game.physics.arcade.overlap(player, water, getDamageFromTile, null, this);
+        game.physics.arcade.overlap(player, tombstones, skeletonUprising, null, this);
         if (!game.physics.arcade.overlap(player, ladders, onLadder, null, this)) {
             setNormalGravity();
         }
@@ -397,6 +407,8 @@ function restart() {
         getAdditionalWeapon(player, game.add.sprite(0, 0, 'dagger_on_ground'));
         add_weapon = false;
     }
+    tombstones.removeAll();
+    map.createFromObjects('tombstones', 88, 'tombstone', 0, true, false, tombstones);
 }
 
 function getDamageFromTile() {
@@ -482,6 +494,16 @@ function onLadder(player, ladder) {
 
 function setNormalGravity() {
     player.body.gravity.y = 300;
+}
+
+function skeletonUprising(player, tombstone) {
+    if (lifes.countLiving()) {
+        alertSound.play();
+        skeleton = new Skeleton(game, tombstone.x, tombstone.y - 20, -player.scale.x, 50);
+        game.add.existing(skeleton);
+        enemy.add(skeleton);
+        tombstone.kill();
+    }
 }
 
 function create_level(level) {

@@ -67,6 +67,7 @@ function menuLoad() {
     game.load.image('level1back', 'assets/images/level1back.png');
     game.load.image('level2back', 'assets/images/level2back.png');
     game.load.image('check_mark', 'assets/images/flag/check_mark.png');
+    game.load.image('tombstone', 'assets/images/tombstone.png');
 
     game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
 
@@ -92,6 +93,7 @@ function menuLoad() {
     game.load.audio('checkpoint_sound', 'assets/sounds/checkpoint.wav');
     game.load.audio('game_music', 'assets/sounds/music/game.ogg');
     game.load.audio('menu_music', 'assets/sounds/music/menu.ogg');
+    game.load.audio('alert_sound', 'assets/sounds/alert.mp3');
     game.load.start();
 }
 
