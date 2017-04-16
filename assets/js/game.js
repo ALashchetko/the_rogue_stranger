@@ -249,6 +249,7 @@ function createEnemy() {
 
 function setCheckpointCoor(player, checkpoint) {
     if (checkpoint.frame === 16) {
+        setupText('Checkpoint activated!');
         checkpointSound.play();
         checkpoint.frame = 17;
         checkpointCoor.x = player.x;
@@ -319,6 +320,15 @@ function skeletonUprising(player, tombstone) {
         enemy.add(skeleton);
         tombstone.kill();
     }
+}
+
+function setupText(text) {
+    game.instructions = game.add.text(320, 100,
+        text, { font: 'bold 25px Press Start 2P', fill: '#190707', align: 'center' }
+    );
+    game.instructions.anchor.setTo(0.5, 0.5);
+    game.instructions.fixedToCamera = true;
+    game.time.events.add(2000, game.instructions.destroy, game.instructions);
 }
 
 function create_level(level) {

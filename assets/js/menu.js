@@ -68,16 +68,20 @@ function menuLoad() {
     game.load.image('level2back', 'assets/images/level2back.png');
     game.load.image('check_mark', 'assets/images/flag/check_mark.png');
     game.load.image('tombstone', 'assets/images/tombstone.png');
+    game.load.image('back_intro', 'assets/images/back_intro.jpg');
+
 
     game.load.spritesheet('tiles', 'assets/images/tiles.png', 16, 16);
 
     game.load.tilemap('level1', 'assets/images/level1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('level2', 'assets/images/level2.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('intro', 'assets/images/intro.json', null, Phaser.Tilemap.TILED_JSON);
 
     game.load.atlas('knight', 'assets/images/knight/knight_atlas.png', 'assets/images/knight/knight_atlas.json');
     game.load.atlas('skeleton', 'assets/images/skeleton/skeleton_atlas.png', 'assets/images/skeleton/skeleton_atlas.json');
     game.load.atlas('slime', 'assets/images/slime/slime_atlas.png', 'assets/images/slime/slime_atlas.json');
     game.load.atlas('flag', 'assets/images/flag/flag_atlas.png', 'assets/images/flag/flag_atlas.json');
+    game.load.atlas('princess', 'assets/images/princess/princess.png', 'assets/images/princess/princess.json');
     game.load.audio('get_damage_sound', 'assets/sounds/get_damage.wav');
     game.load.audio('slime_kill_sound', 'assets/sounds/slime_kill.mp3');
     game.load.audio('skeleton_kill_sound', 'assets/sounds/skeleton_kill.mp3');
